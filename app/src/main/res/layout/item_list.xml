@@ -6,6 +6,20 @@
     android:orientation="vertical"
     android:background="#00000000">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You have not claimed any portions."
+        android:id="@+id/tvNoFound"
+        android:textSize="@dimen/font18"
+        android:gravity="center"
+        android:textColor="@color/time_color"
+        android:padding="@dimen/margin10"
+        android:layout_marginTop="@dimen/margin20"
+        android:layout_marginBottom="@dimen/margin20"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

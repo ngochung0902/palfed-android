@@ -189,7 +189,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             Log.e("token_hash Main1", QTSRun.getTokenhash(getApplicationContext()));
 
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
-                localtime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
             }else{
@@ -238,7 +238,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 for (int ix = 0; ix <listMenu1.size(); ix ++){
                     listOptions1 = new ArrayList<OptionObject>();
                     listOptions1 = listMenu1.get(ix).getOptionObjectArrayList();
-                    listChild1.put(listMenu1.get(ix),listOptions1);
+//                    if (listOptions1.size()>0)
+                        listChild1.put(listMenu1.get(ix),listOptions1);
                 }
                 listAdapter1 = new ExpandListAdapter(MainActivity.this,
                         listMenu1, listChild1);
@@ -423,12 +424,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //
 //        }
 //    }
-    public static String timeZone()
-    {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
-        String   timeZone = new SimpleDateFormat("Z").format(calendar.getTime());
-        return timeZone.substring(1, 3);
-    }
     class GetData extends AsyncTask<String, Void, String> {
         String token_hash="";
         String login_token = "";
@@ -610,10 +605,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             mn_Object1.setOptionObjectArrayList(listOptions1);
                             listMenu.add(mn_Object);
                             listChild.put(listMenu.get(i),listOptions);
-//                            if (listOptions1.size()>0){
+                            if (listOptions1.size()>0){
                                 listMenu1.add(mn_Object1);
+//                            if (listOptions1.size()>0)
                                 listChild1.put(listMenu1.get(i),listOptions1);
-//                            }
+                            }
 
                         }
                         pr_Object.setMenuObjectArrayList(listMenu);
@@ -738,7 +734,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
                 isTickCal = false;
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
-                localtime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
             }else{

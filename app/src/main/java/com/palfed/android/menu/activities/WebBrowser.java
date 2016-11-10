@@ -103,12 +103,13 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         QTSRun.setIsCheck(getApplicationContext(), true);
         final Intent intent = getIntent();
         url = intent.getStringExtra("url");
-        if (url.endsWith("?")) {
+        if (url.endsWith("?")||url.contains("?")) {
             url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
         } else {
             url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
 
         }
+        Log.e("WebBrowser","Url:" +url);
         QTSRun.setFontTV(getApplicationContext(), lbTitle, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
         webBrowser.getSettings().setJavaScriptEnabled(true);
         webBrowser.getSettings().setAllowFileAccess(true);

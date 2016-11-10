@@ -163,7 +163,7 @@ public class LoginActivity extends Activity {
                         facebook_access_token = loginResult.getAccessToken().getToken();
                         email="";
                         password="";
-                        localtime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                        localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                 .format(Calendar.getInstance().getTime()).toString();
                         new GetData().execute();
                     }
@@ -208,8 +208,9 @@ public class LoginActivity extends Activity {
                             QTSRun.setemail(getApplicationContext(), email);
                             QTSRun.setLname(getApplicationContext(), password);
                             facebook_access_token ="";
-                            localtime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                            localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                     .format(Calendar.getInstance().getTime()).toString();
+                            Log.e("LoginActivity","localtime:"+localtime);
                             new GetData().execute();
                         } else {
                             QTSRun.showToast(getApplicationContext(), "Password is required");
@@ -290,9 +291,10 @@ public class LoginActivity extends Activity {
 
     public static String timeZone()
     {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
         String   timeZone = new SimpleDateFormat("Z").format(calendar.getTime());
-        return timeZone.substring(1, 3);
+        Log.e("LoginActivity","timezone:"+timeZone);
+        return timeZone;
     }
     class GetData extends AsyncTask<String, Void, String>{
         String token_hash = "";
@@ -480,9 +482,12 @@ public class LoginActivity extends Activity {
                                 }
                             }
                             mn_Object.setOptionObjectArrayList(optionList);
-                            mn_Object1.setOptionObjectArrayList(optionList1);
                             menuList.add(mn_Object);
-                            menuList1.add(mn_Object1);
+                            if (optionList1.size()>0){
+                                mn_Object1.setOptionObjectArrayList(optionList1);
+                                menuList1.add(mn_Object1);
+                            }
+
                         }
                         pr_Object.setMenuObjectArrayList(menuList);
                         pr_Object1.setMenuObjectArrayList(menuList1);

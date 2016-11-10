@@ -92,7 +92,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         LinearLayout ll_right_parent;
         LinearLayout ll_group_main;
         Button btnAdd, btnInviteFriend, btnFriendFinder, btnMake;
-        TextView tvLink, align_top_menu;
+        TextView tvLink, align_top_menu, tvNoFound;
     }
     @Override
     public View getChildView(int groupPosition, final int childPosition,
@@ -149,10 +149,14 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             holder.iconSpace = (ImageView) convertView.findViewById(R.id.iconSpace);
             holder.iconMile = (ImageView) convertView.findViewById(R.id.ivMiles);
             holder.align_top_menu = (TextView) convertView.findViewById(R.id.align_top_menu);
+            holder.tvNoFound = (TextView) convertView.findViewById(R.id.tvNoFound);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
+//        if (_listDataChild.get(_listDataHeader.get(groupPosition)) == null){
+//            holder.tvNoFound.setVisibility(View.VISIBLE);
+//        }else holder.tvNoFound.setVisibility(View.GONE);
         QTSRun.setLayoutView(holder.btnAdd, (int)(w / 4.5), (int) _context.getResources().getDimension(R.dimen.margin30));
         QTSRun.setLayoutView(holder.btnMake,(int)(w/4.5),(int)_context.getResources().getDimension(R.dimen.margin30));
         QTSRun.setLayoutView(holder.btnInviteFriend,(int)(w/4),(int)_context.getResources().getDimension(R.dimen.margin30));
@@ -186,7 +190,8 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
         holder.title.setText(childText.getTitle());
         holder.content.setText(childText.getDescription());
-        Log.e("getGroupView","childrent:"+childText.getTitle());
+//        Log.e("getGroupView","childrent:"+childText.getTitle());
+//        You have not claimed any portions
         if (childText.getName() != null ){
             holder.tvName.setText(childText.getName().toUpperCase());
         }else{
@@ -488,7 +493,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.item_header_list, null);
         }
-        Log.e("getGroupView","parent:"+itemMenu.getDay());
+//        Log.e("getGroupView","parent:"+itemMenu.getDay());
         TextView lblListHeader = (TextView) convertView
                 .findViewById(R.id.tvDay);
         TextView date_parent = (TextView) convertView
