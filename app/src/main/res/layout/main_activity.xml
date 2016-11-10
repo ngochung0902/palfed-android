@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_main"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/yellow_color"
+        android:paddingTop="@dimen/margin5"
+        android:paddingLeft="@dimen/margin10"
+        android:paddingRight="@dimen/margin10">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/relativeLayout1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ivLogo"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="@drawable/switch2"
+                android:visibility="visible"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch_main"
+                android:checked="true"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/switch_bg"
+
+                android:track="@drawable/track_bg"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                />
+
+        </RelativeLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+               >
+
+                <LinearLayout
+                    android:id="@+id/rl_group1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="@dimen/margin5"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/ivNotification"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_notification"
+                            />
+                        <TextView
+                            android:layout_width="@dimen/margin25"
+                            android:layout_height="@dimen/margin25"
+                            android:text="1"
+                            android:id="@+id/tv_Notif"
+                            android:textSize="@dimen/font11"
+                            android:textColor="@color/white_color"
+                            android:gravity="center"
+                            android:background="@drawable/ic_red_knob"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignRight="@+id/ivNotification"
+                            android:layout_alignEnd="@+id/ivNotification" />
+                    </RelativeLayout>
+
+
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ivUsers"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/ic_users"
+                        android:layout_marginLeft="@dimen/margin15"
+                        android:layout_marginRight="@dimen/margin15"
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ivCalendar"
+                        android:layout_toRightOf="@+id/ivUsers"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_calendar1"
+                        />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rl_group2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="horizontal"
+                    android:layout_margin="@dimen/margin5">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ivHome"
+                        android:layout_toLeftOf="@+id/ivAvatar"
+                        android:background="@drawable/ic_home"
+                        android:layout_marginRight="@dimen/margin5"
+                        />
+
+                    <com.palfed.android.menu.activities.customviews.CircularImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/ivAvatar"
+                        android:layout_centerInParent="true"
+                        app:border="true"
+                        app:border_color="@color/white_color"
+                        app:border_width="2dp"
+                        app:selector_stroke_color="#88FF8800"
+                        app:selector_stroke_width="2dp"
+                        android:layout_marginLeft="@dimen/margin10"
+                        android:layout_marginRight="@dimen/margin10"
+                        />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ivLogout"
+                        android:layout_toRightOf="@+id/ivAvatar"
+                        android:background="@drawable/ic_logout"
+                        android:layout_marginLeft="@dimen/margin5"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listmain"
+        android:dividerHeight="0dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You have not claimed any portions."
+        android:id="@+id/tvNoFound"
+        android:textSize="@dimen/font18"
+        android:gravity="center"
+        android:textColor="@color/time_color"
+        android:padding="@dimen/margin10"
+        android:layout_marginTop="@dimen/margin50"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <ExpandableListView
+        android:id="@+id/lvExp1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:dividerHeight="0dp"
+        android:divider="#00000000"
+        android:childDivider="#00000000"
+        android:groupIndicator="@null"
+        android:scrollbars="none"
+        />
+    <ExpandableListView
+        android:id="@+id/lvExp2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:dividerHeight="0dp"
+        android:divider="#00000000"
+        android:childDivider="#00000000"
+        android:groupIndicator="@null"
+        android:scrollbars="none"
+        android:visibility="gone"/>
+</LinearLayout>

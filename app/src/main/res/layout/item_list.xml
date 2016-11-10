@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#00000000">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        >
+<LinearLayout
+    android:id="@+id/ll_space_top"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/boder_rect_text"
+        android:padding="@dimen/margin1_5"
+        android:layout_marginTop="@dimen/margin3"
+        android:text="I AM MAKING THIS"
+        android:textColor="@color/white_color"
+        android:textSize="@dimen/font6"
+        android:id="@+id/spacetop"
+        android:visibility="invisible"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/margin10"
+        android:layout_alignParentTop="true"
+        android:id="@+id/spacetop1"
+        android:visibility="gone"/>
+</LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rl_ParentGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/margin10"
+            android:layout_marginRight="@dimen/margin10"
+            android:background="@drawable/boder_rect_yellow"
+            android:padding="@dimen/margin5"
+            android:layout_below="@+id/ll_space_top">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+               android:paddingBottom="@dimen/margin5">
+
+
+                <com.palfed.android.menu.activities.customviews.CircularImageView
+                    android:id="@+id/view"
+                    android:layout_width="@dimen/margin50"
+                    android:layout_height="@dimen/margin50"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="@dimen/margin5"
+                    android:layout_marginTop="@dimen/margin5"
+                    app:border="true"
+                    app:border_width="1dp"
+                    app:selector_stroke_color="#88FF8800"
+                    app:selector_stroke_width="2dp" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/view"
+                    android:layout_centerHorizontal="true">
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="WAYNE"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/time_color"
+                        android:textSize="@dimen/font10" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_group0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/ll_icon_home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/margin5">
+
+                            <ImageView
+                                android:id="@+id/iconHome"
+                                android:layout_width="@dimen/margin30"
+                                android:layout_height="@dimen/margin30"
+                                android:background="@drawable/ic_home" />
+
+                            <ImageView
+                                android:id="@+id/iconBaged"
+                                android:layout_width="@dimen/margin30"
+                                android:layout_height="@dimen/margin30"
+                                android:background="@drawable/item_briefcase" />
+
+                            <ImageView
+                                android:id="@+id/iconSpace"
+                                android:layout_width="@dimen/margin30"
+                                android:layout_height="@dimen/margin30"
+                                android:background="@drawable/ic_home"
+                                android:visibility="invisible" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvHour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/ll_icon_home"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center_horizontal"
+                            android:text="7:30 PM"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font22" />
+
+                        <TextView
+                            android:id="@+id/tvHour_ago"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="3h 32m ago"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font10" />
+
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/tvLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="SponSored Link"
+                        android:textColor="@color/time_color"
+                        android:textSize="@dimen/font10"
+                        android:visibility="gone" />
+                    <RelativeLayout
+                        android:id="@+id/rl_Road"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/margin5">
+
+                        <ImageView
+                            android:id="@+id/ivMiles"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:background="@drawable/item_road" />
+
+                        <TextView
+                            android:id="@+id/tv_mile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/ivMiles"
+                            android:text="1 miles"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font10" />
+                    </RelativeLayout>
+                    <Button
+                        android:id="@+id/btnAddFriend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/margin35"
+                        android:layout_below="@+id/tvLink"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/btn_login"
+                        android:text="Add Friend"
+                        android:gravity="center"
+                        android:textColor="@color/white_color"
+                        android:textSize="@dimen/font10"
+                        android:visibility="gone"
+                        android:layout_marginBottom="@dimen/margin5"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/space_width" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/line1"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/margin5"
+                android:layout_marginBottom="@dimen/margin5"
+                android:background="@color/light_gray">
+                </TextView>
+
+            <LinearLayout
+                android:id="@+id/ll_right_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/margin5"
+                android:paddingBottom="@dimen/margin10"
+                android:paddingRight="@dimen/margin10"
+                android:paddingLeft="@dimen/margin10">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ll_group_main">
+                    <TextView
+                        android:id="@+id/align_top_menu"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/margin10"
+                        android:visibility="gone"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin5"
+                        android:layout_marginLeft="@dimen/margin_3"
+                        >
+                        <com.palfed.android.menu.activities.customviews.CircularImageView
+                            android:id="@+id/ivPic_Title"
+                            android:layout_width="@dimen/margin60"
+                            android:layout_height="@dimen/margin60"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            app:border="true"
+                            app:border_width="1dp"
+                            app:selector_stroke_color="#88FF8800"
+                            app:selector_stroke_width="2dp" />
+                        <TextView
+                            android:id="@+id/item_Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Lasagne"
+                            android:textColor="@color/title_color"
+                            android:textSize="@dimen/font20"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="@dimen/margin3"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/ivPic_Title"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/rl_Restaurant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
+
+                        <com.palfed.android.menu.activities.customviews.CircularImageView
+                            android:id="@+id/ivPic_Restaurant"
+                            android:layout_width="@dimen/margin50"
+                            android:layout_height="@dimen/margin50"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="@dimen/margin5"
+                            app:border="true"
+                            app:border_width="1dp"
+                            app:selector_stroke_color="#88FF8800"
+                            app:selector_stroke_width="2dp" />
+
+
+                        <TextView
+                            android:id="@+id/tvRestaurant"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/ivPic_Restaurant"
+                            android:text="Restaurant"
+                            android:textColor="@color/title_color"
+                            android:textSize="@dimen/font18"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/item_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin5"
+                        android:text="Delicious meat Lasagne"
+                        android:textColor="@color/time_color"
+                        android:textSize="@dimen/font12" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_group1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/item2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/margin5"
+                            android:text="PORTIONS AVAILABLE:2"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font12" />
+
+                        <TextView
+                            android:id="@+id/item3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="BEING EATEN BY"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font12" />
+
+                        <TextView
+                            android:id="@+id/item4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/margin5"
+                            android:text="dsklgdf;jkdf'm;"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font12" />
+
+                        <TextView
+                            android:id="@+id/item5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="COMMENTS:4"
+                            android:textColor="@color/time_color"
+                            android:textSize="@dimen/font12" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_content5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Do you know Benjamin Holness?\nThey are making this soon!\nWhy not send a friend request?"
+                        android:textColor="@color/time_color"
+                        android:textSize="@dimen/font12"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_group2"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/margin30"
+                        android:text="Make"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/margin5"
+                        android:id="@+id/btnMake"
+                        android:background="@drawable/btn_login"
+                        android:textSize="@dimen/font10"
+                        android:paddingLeft="@dimen/margin5"
+                        android:paddingRight="@dimen/margin5"
+                        android:textColor="@color/white_color"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/margin30"
+                        android:text="Invite Friends"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/margin5"
+                        android:id="@+id/btnInviteFriend"
+                        android:background="@drawable/btn_login"
+                        android:textSize="@dimen/font10"
+                        android:paddingLeft="@dimen/margin5"
+                        android:paddingRight="@dimen/margin5"
+                        android:textColor="@color/white_color"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/margin30"
+                        android:text="Pal Finder"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/margin5"
+                        android:id="@+id/btnFriendFinder"
+                        android:textSize="@dimen/font10"
+                        android:paddingLeft="@dimen/margin5"
+                        android:paddingRight="@dimen/margin5"
+                        android:textColor="@color/white_color"
+                        android:background="@drawable/btn_login"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin10"
+            android:layout_below="@+id/rl_ParentGroup"
+            android:id="@+id/space_bottom"
+            />
+        <TextView
+            android:id="@+id/tvSp"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/margin10"
+         />
+        <TextView
+            android:id="@+id/tvBoder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/tvSp"
+            android:layout_marginLeft="@dimen/margin15"
+            android:background="@drawable/boder_rect_text"
+            android:padding="@dimen/margin3"
+            android:layout_marginTop="@dimen/margin3"
+            android:text="I AM MAKING THIS"
+            android:textColor="@color/white_color"
+            android:textSize="@dimen/font12" />
+
+    </RelativeLayout>
+</LinearLayout>
