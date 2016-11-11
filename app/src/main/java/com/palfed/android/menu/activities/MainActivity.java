@@ -597,7 +597,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                                     }
                                 }
                                 listOptions.add(op_object);
-                                if (op_object.getNotify_text().length()>0 && op_object.getI_am_making_this().equalsIgnoreCase("1")){
+                                if (op_object.getNotify_text().length()>0 ){// && op_object.getI_am_making_this().equalsIgnoreCase("1")){
                                     listOptions1.add(op_object);
                                 }
                             }
