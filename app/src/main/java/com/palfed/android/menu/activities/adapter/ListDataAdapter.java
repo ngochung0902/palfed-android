@@ -52,7 +52,7 @@ public class ListDataAdapter extends BaseAdapter{
 		CircularImageView imvRestaurant;
 		RelativeLayout rlRestaurant;
 		RelativeLayout rlMile2;
-		RelativeLayout rlParentGroup;
+		LinearLayout rlParentGroup;
 		RelativeLayout relativeLayout;
 		LinearLayout ll_group1;
 		LinearLayout ll_group0;
@@ -81,7 +81,7 @@ public class ListDataAdapter extends BaseAdapter{
 		if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.item_list, null);
-			holder.rlParentGroup = (RelativeLayout)convertView.findViewById(R.id.rl_ParentGroup);
+			holder.rlParentGroup = (LinearLayout)convertView.findViewById(R.id.rl_ParentGroup);
 			holder.relativeLayout = (RelativeLayout) convertView.findViewById(R.id.relativeLayout);
 			holder.tvBoder = (TextView) convertView.findViewById(R.id.tvBoder);
 			holder.ll_group1 = (LinearLayout)convertView.findViewById(R.id.ll_group1);

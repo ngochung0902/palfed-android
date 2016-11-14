@@ -25,24 +25,24 @@ public class QTSConst {
 	public static String FONT_ARBUTUSSLAB_REGULAR = "fonts/ArbutusSlab-Regular.ttf";
 
 	//DEVELOPMENT
-	public static String URL_MAKE = "https://design.palfed.com/food/add";
-	public static String URL_FRIEND_FINDER = "https://design.palfed.com/friends/finder";
-	public static String URL_INVITE_FRIENDS = "https://design.palfed.com/friends/invite";
-	public static String URL_GET_MENU = "https://design.palfed.com/api/get-menu";
-	public static String URL_LOGIN = "https://design.palfed.com/api/login";
-	public static String URL_SETLOCATION = "https://design.palfed.com/api/set-location";
-	public static String URL_REGISTRATION = "https://design.palfed.com/api/set-android-registration-id?registration_id";
- 	public static String URL_FORGOTTEN_PASSWORD = "https://www.palfed.com/login/forgotten-password";
-	public static String URL_LOGINTOKEN = "https://design.palfed.com/api/get-login-token";
+//	public static String URL_MAKE = "https://design.palfed.com/food/add";
+//	public static String URL_FRIEND_FINDER = "https://design.palfed.com/friends/finder";
+//	public static String URL_INVITE_FRIENDS = "https://design.palfed.com/friends/invite";
+//	public static String URL_GET_MENU = "https://design.palfed.com/api/get-menu";
+//	public static String URL_LOGIN = "https://design.palfed.com/api/login";
+//	public static String URL_SETLOCATION = "https://design.palfed.com/api/set-location";
+//	public static String URL_REGISTRATION = "https://design.palfed.com/api/set-android-registration-id?registration_id";
+// 	public static String URL_FORGOTTEN_PASSWORD = "https://www.palfed.com/login/forgotten-password";
+//	public static String URL_LOGINTOKEN = "https://design.palfed.com/api/get-login-token";
 
 //	//DISTRIBUTION
-//	public static String URL_MAKE = "https://www.palfed.com/food/add";
-//	public static String URL_FRIEND_FINDER = "https://www.palfed.com/friends/finder";
-//	public static String URL_INVITE_FRIENDS = "https://www.palfed.com/friends/invite";
-//	public static String URL_GET_MENU = "https://www.palfed.com/api/get-menu";
-//	public static String URL_LOGIN = "https://www.palfed.com/api/login";
-//	public static String URL_SETLOCATION = "https://www.palfed.com/api/set-location";
-//	public static String URL_REGISTRATION = "https://palfed.com/api/set-android-registration-id?registration_id";
-//	public static String URL_FORGOTTEN_PASSWORD = "https://www.palfed.com/login/forgotten-password";
-//	public static String URL_LOGINTOKEN = "https://www.palfed.com/api/get-login-token";
+	public static String URL_MAKE = "https://www.palfed.com/food/add";
+	public static String URL_FRIEND_FINDER = "https://www.palfed.com/friends/finder";
+	public static String URL_INVITE_FRIENDS = "https://www.palfed.com/friends/invite";
+	public static String URL_GET_MENU = "https://www.palfed.com/api/get-menu";
+	public static String URL_LOGIN = "https://www.palfed.com/api/login";
+	public static String URL_SETLOCATION = "https://www.palfed.com/api/set-location";
+	public static String URL_REGISTRATION = "https://palfed.com/api/set-android-registration-id?registration_id";
+	public static String URL_FORGOTTEN_PASSWORD = "https://www.palfed.com/login/forgotten-password";
+	public static String URL_LOGINTOKEN = "https://www.palfed.com/api/get-login-token";
 }
