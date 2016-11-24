@@ -108,7 +108,6 @@ public class MenuObject implements Parcelable {
         message_text = parcel.readString();
         message_html = parcel.readString();
         optionObjectArrayList = new ArrayList<OptionObject>();
-//        parcel.readList(optionObjectArrayList,null);
         optionObjectArrayList = parcel.readArrayList(OptionObject.class.getClassLoader());
     }
     public static final Parcelable.Creator<MenuObject> CREATOR = new Parcelable.Creator<MenuObject>() {

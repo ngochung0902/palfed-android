@@ -3,6 +3,9 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Android QTS on 1/5/2016.
  */
@@ -35,6 +38,15 @@ public class OptionObject implements Parcelable {
     String restaurant;
     String restaurant_profile_pic_url;
     String food_image_url;
+    List<TagsObject> tags;
+
+    public void setTags(List<TagsObject> tags) {
+        this.tags = tags;
+    }
+
+    public List<TagsObject> getTags() {
+        return tags;
+    }
 
     public void setRestaurant(String restaurant) {
         this.restaurant = restaurant;
@@ -295,6 +307,7 @@ public class OptionObject implements Parcelable {
         parcel.writeString(restaurant);
         parcel.writeString(restaurant_profile_pic_url);
         parcel.writeString(food_image_url);
+        parcel.writeList(tags);
     }
 
     public OptionObject() {
@@ -329,6 +342,8 @@ public class OptionObject implements Parcelable {
         restaurant = parcel.readString();
         restaurant_profile_pic_url = parcel.readString();
         food_image_url = parcel.readString();
+        tags = new ArrayList<TagsObject>();
+        tags = parcel.readArrayList(TagsObject.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<OptionObject> CREATOR = new Parcelable.Creator<OptionObject>() {

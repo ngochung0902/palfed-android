@@ -132,10 +132,10 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                 QTSRun.setIsService(getApplicationContext(), false);
 //                stopService(intent);
                 Intent intent = new Intent(WebBrowser.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-//                finish();
+                finish();
             }
         });
         T = new Timer();

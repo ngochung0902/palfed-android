@@ -32,9 +32,12 @@ import com.facebook.login.LoginResult;
 import com.palfed.android.menu.activities.commonhelper.QTSConst;
 import com.palfed.android.menu.activities.commonhelper.QTSRun;
 import com.palfed.android.menu.activities.gcm.GCMClientManager;
+import com.palfed.android.menu.activities.objects.FrRequestObj;
+import com.palfed.android.menu.activities.objects.FriendObjParent;
 import com.palfed.android.menu.activities.objects.MenuObject;
 import com.palfed.android.menu.activities.objects.OptionObject;
 import com.palfed.android.menu.activities.objects.ParentObject;
+import com.palfed.android.menu.activities.objects.TagsObject;
 import com.palfed.android.menu.activities.objects.UserObject;
 import com.palfed.android.menu.R;
 import com.palfed.android.menu.activities.commonhelper.GPSTracker;
@@ -86,6 +89,8 @@ public class LoginActivity extends Activity {
     private ArrayList<MenuObject> menuList1 = null;
     private ArrayList<OptionObject> optionList1 = null;
     private UserObject us_Object;
+
+    private ArrayList<FriendObjParent> arrayParents = null;
 
     private String android_device_id = "";
     private String localtime ;
@@ -334,6 +339,7 @@ public class LoginActivity extends Activity {
                     if (status.equalsIgnoreCase("Success")){
                         arrList = new ArrayList<ParentObject>();
                         arrList1 = new ArrayList<ParentObject>();
+                        arrayParents = new ArrayList<FriendObjParent>();
                         ParentObject pr_Object = new ParentObject();
                         ParentObject pr_Object1 = new ParentObject();
                         pr_Object.setStatus(json.getString("status"));
@@ -355,6 +361,50 @@ public class LoginActivity extends Activity {
                         token_hash = json.getString("secret")+json.getString("token");
                         secret =json.getString("secret");
 //                        Log.e("get token_hash",json.getString("secret")+"//"+json.getString("token")+"//"+token_hash);
+                        if (json.toString().contains("friend_requests")){
+                            JSONArray arr_parents = json.getJSONArray("friend_requests");
+                            if (arr_parents.length() > 0){
+                                FriendObjParent parentObj_Fr = new FriendObjParent();
+                                parentObj_Fr.setmTitle("Friend Requests");
+                                parentObj_Fr.setIsRequest(1);
+                                ArrayList<FrRequestObj> arrayChildren = new ArrayList<FrRequestObj>();
+                                for (int m = 0; m < arr_parents.length(); m++) {
+                                    JSONObject item_Child = arr_parents.getJSONObject(m);
+                                    FrRequestObj objChild = new FrRequestObj();
+                                    objChild.setName(item_Child.getString("name"));
+                                    objChild.setPicture_url(item_Child.getString("picture"));
+                                    objChild.setFr_id(item_Child.getString("fr_id"));
+                                    objChild.setGuid(item_Child.getString("guid"));
+                                    objChild.setRequest_html(item_Child.getString("request_html"));
+//                                    objChild.setIsRequest(1);
+                                    arrayChildren.add(objChild);
+                                }
+                                parentObj_Fr.setmArrayChildren(arrayChildren);
+                                arrayParents.add(parentObj_Fr);
+                            }
+                        }
+                        if (json.toString().contains("friend_suggestions")){
+                            JSONArray arr_parents = json.getJSONArray("friend_suggestions");
+                            if (arr_parents.length() > 0){
+                                FriendObjParent parentObj_Fr = new FriendObjParent();
+                                parentObj_Fr.setmTitle("Friend Suggestions");
+                                parentObj_Fr.setIsRequest(0);
+                                ArrayList<FrRequestObj> arrayChildren = new ArrayList<FrRequestObj>();
+                                for (int n = 0; n < arr_parents.length(); n++) {
+                                    JSONObject item_Child = arr_parents.getJSONObject(n);
+                                    FrRequestObj objChild = new FrRequestObj();
+                                    objChild.setName(item_Child.getString("name"));
+                                    objChild.setPicture_url(item_Child.getString("picture"));
+                                    objChild.setFr_id(item_Child.getString("fr_id"));
+                                    objChild.setGuid(item_Child.getString("guid"));
+                                    objChild.setRequest_html(item_Child.getString("request_html"));
+//                                    objChild.setIsRequest(0);
+                                    arrayChildren.add(objChild);
+                                }
+                                parentObj_Fr.setmArrayChildren(arrayChildren);
+                                arrayParents.add(parentObj_Fr);
+                            }
+                        }
                         JSONArray arr_menu = json.getJSONArray("menu");
                         menuList = new ArrayList<MenuObject>();
                         menuList1 = new ArrayList<MenuObject>();
@@ -390,6 +440,26 @@ public class LoginActivity extends Activity {
                                 op_object.setMenu_type(item_options.getString("menu_type") + "");
                                 if (item_options.toString().contains("name")){
                                     op_object.setName(item_options.getString("name"));
+                                }
+                                if (item_options.toString().contains("tags")){
+                                    JSONArray arr_tags = item_options.getJSONArray("tags");
+                                    ArrayList<TagsObject> arrTags_list =  new ArrayList<TagsObject>();
+                                    for (int x =0; x<arr_tags.length();x++){
+                                        TagsObject objTag = new TagsObject();
+                                        objTag.setTag(arr_tags.getJSONObject(x).getString("tag"));
+                                        objTag.setType(arr_tags.getJSONObject(x).getString("type"));
+                                        if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("feature")){
+                                            objTag.setMcolor(getResources().getColor(R.color.feature));
+                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("warning")){
+                                            objTag.setMcolor(getResources().getColor(R.color.warning));
+                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("general")){
+                                            objTag.setMcolor(getResources().getColor(R.color.general));
+                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("pending")){
+                                            objTag.setMcolor(getResources().getColor(R.color.pending));
+                                        }
+                                        arrTags_list.add(objTag);
+                                    }
+                                    op_object.setTags(arrTags_list);
                                 }
                                 if (item_options.toString().contains("profile_pic_url")){
                                     op_object.setProfile_pic_url(item_options.getString("profile_pic_url"));
@@ -527,6 +597,8 @@ public class LoginActivity extends Activity {
                         (ArrayList<? extends Parcelable>) arrList);
                 bundle.putParcelableArrayList("data_arr1",
                         (ArrayList<? extends Parcelable>) arrList1);
+                bundle.putParcelableArrayList("data_friend",
+                        (ArrayList<? extends Parcelable>) arrayParents);
                 i.putExtras(bundle);
                 i.putExtra("user_object", us_Object);
                 startActivity(i);

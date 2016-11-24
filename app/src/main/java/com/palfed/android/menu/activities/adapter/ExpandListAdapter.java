@@ -2,6 +2,7 @@ package com.palfed.android.menu.activities.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +23,11 @@ import com.palfed.android.menu.activities.objects.MenuObject;
 import com.palfed.android.menu.activities.objects.OptionObject;
 import com.palfed.android.menu.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import me.kaede.tagview.Tag;
+import me.kaede.tagview.TagView;
 
 /**
  * Created by Android QTS on 1/4/2016.
@@ -93,6 +96,9 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         LinearLayout ll_group_main;
         Button btnAdd, btnInviteFriend, btnFriendFinder, btnMake;
         TextView tvLink, align_top_menu, tvNoFound;
+//        TagContainerLayout mTagContainerLayout;
+        TagView tagView;
+        Tag tag ;
     }
     @Override
     public View getChildView(int groupPosition, final int childPosition,
@@ -150,6 +156,8 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             holder.iconMile = (ImageView) convertView.findViewById(R.id.ivMiles);
             holder.align_top_menu = (TextView) convertView.findViewById(R.id.align_top_menu);
             holder.tvNoFound = (TextView) convertView.findViewById(R.id.tvNoFound);
+//            holder.mTagContainerLayout = (TagContainerLayout) convertView.findViewById(R.id.tagcontainerLayout);
+            holder.tagView = (TagView) convertView.findViewById(R.id.tagview);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
@@ -190,12 +198,41 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
 
         holder.title.setText(childText.getTitle());
         holder.content.setText(childText.getDescription());
+//        holder.mTagContainerLayout.setTagTypeface("RobotoSlab-Regular.ttf");
+//        holder.mTagContainerLayout.setBorderRadius(5f);
+//        holder.mTagContainerLayout.setBackgroundColor(_context.getResources().getColor(R.color.transparent));
+//        holder.mTagContainerLayout.setBorderWidth(0f);
+//        holder.mTagContainerLayout.setTagBorderRadius(5f);
+//        holder.mTagContainerLayout.setTagTextColor(_context.getResources().getColor(R.color.white_color));
 //        Log.e("getGroupView","childrent:"+childText.getTitle());
 //        You have not claimed any portions
         if (childText.getName() != null ){
             holder.tvName.setText(childText.getName().toUpperCase());
         }else{
             holder.tvName.setText("");
+        }
+
+        if (childText.getTags() != null){
+//            holder.mTagContainerLayout.setVisibility(View.VISIBLE);
+            holder.tagView.setVisibility(View.VISIBLE);
+            holder.tagView.removeAllTags();
+            for (int i=0; i<childText.getTags().size();i++){
+                holder.tag = new Tag(childText.getTags().get(i).getTag());
+                holder.tag.tagTextColor = Color.parseColor("#FFFFFF");
+                holder.tag.layoutColor =  childText.getTags().get(i).getMcolor();
+//                tag.layoutColorPress = Color.parseColor("#555555");
+//or tag.background = this.getResources().getDrawable(R.drawable.custom_bg);
+                holder.tag.radius = 5f;
+                holder.tag.tagTextSize = 12f;
+                holder.tag.layoutBorderSize = 1f;
+                holder.tag.layoutBorderColor = Color.parseColor("#FFFFFF");
+                holder.tag.isDeletable = false;
+                holder.tagView.addTag(holder.tag);
+//                holder.mTagContainerLayout.addTag(childText.getTags().get(i).getTag());
+//                holder.mTagContainerLayout.setTagBackgroundColor(childText.getTags().get(i).getMcolor());
+//                holder.mTagContainerLayout.setTagBorderColor(childText.getTags().get(i).getMcolor());
+
+            }
         }
         if (childText.getFood_image_url().length()>0){
             holder.imvAvatarTitle.setVisibility(View.VISIBLE);

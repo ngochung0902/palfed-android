@@ -12,4 +12,8 @@
     <color name="black_color">#000000</color>
     <color name="transparent">#00000000</color>
     <color name="light_gray">#c2c2c2</color>
+    <color name="feature">#70a955</color>
+    <color name="warning">#ba3f3c</color>
+    <color name="general">#924e7f</color>
+    <color name="pending">#e3a401</color>
 </resources>

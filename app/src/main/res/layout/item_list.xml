@@ -312,7 +312,33 @@
                         android:text="Delicious meat Lasagne"
                         android:textColor="@color/time_color"
                         android:textSize="@dimen/font12" />
-
+                    <me.kaede.tagview.TagView
+                        android:id="@+id/tagview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin5"
+                        android:visibility="gone"
+                        app:lineMargin="@dimen/margin3"
+                        app:tagMargin="@dimen/margin4"
+                        app:textPaddingBottom="@dimen/margin3"
+                        app:textPaddingLeft="@dimen/margin5"
+                        app:textPaddingRight="@dimen/margin5"
+                        app:textPaddingTop="@dimen/margin3"
+                        >
+                    </me.kaede.tagview.TagView>
+                    <!--<co.hkm.soltag.TagContainerLayout-->
+                        <!--android:id="@+id/tagcontainerLayout"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_margin="0dp"-->
+                        <!--android:padding="@dimen/margin5"-->
+                        <!--app:container_enable_drag="false"-->
+                        <!--app:horizontal_interval="@dimen/margin5"-->
+                        <!--app:vertical_interval="@dimen/margin5"-->
+                        <!--app:tag_theme="pure_teal"-->
+                        <!--android:visibility="gone"-->
+                        <!--android:layout_marginBottom="@dimen/margin5"-->
+                        <!--/>-->
                     <LinearLayout
                         android:id="@+id/ll_group1"
                         android:layout_width="match_parent"

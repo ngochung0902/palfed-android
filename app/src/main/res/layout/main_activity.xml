@@ -96,7 +96,7 @@
                         android:id="@+id/ivUsers"
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
-                        android:background="@drawable/ic_users"
+                        android:background="@drawable/ic_menulist"
                         android:layout_marginLeft="@dimen/margin15"
                         android:layout_marginRight="@dimen/margin15"
                         />
@@ -159,12 +159,6 @@
 
     </RelativeLayout>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/listmain"
-        android:dividerHeight="0dp"
-        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -178,7 +172,17 @@
         android:layout_marginTop="@dimen/margin50"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
-
+    <ExpandableListView
+        android:id="@+id/lvExpFooter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:dividerHeight="0dp"
+        android:divider="#00000000"
+        android:childDivider="#00000000"
+        android:groupIndicator="@null"
+        android:scrollbars="none"
+        android:visibility="visible"/>
     <ExpandableListView
         android:id="@+id/lvExp1"
         android:layout_width="match_parent"
@@ -189,7 +193,7 @@
         android:childDivider="#00000000"
         android:groupIndicator="@null"
         android:scrollbars="none"
-        />
+        android:visibility="gone"/>
     <ExpandableListView
         android:id="@+id/lvExp2"
         android:layout_width="match_parent"
@@ -201,4 +205,5 @@
         android:groupIndicator="@null"
         android:scrollbars="none"
         android:visibility="gone"/>
+
 </LinearLayout>
