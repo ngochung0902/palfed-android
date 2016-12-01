@@ -301,7 +301,8 @@
                             android:text="Restaurant"
                             android:textColor="@color/title_color"
                             android:textSize="@dimen/font18"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            />
                     </RelativeLayout>
 
                     <TextView
@@ -316,10 +317,10 @@
                         android:id="@+id/tagview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin5"
                         android:visibility="gone"
+                        android:layout_weight="1"
                         app:lineMargin="@dimen/margin3"
-                        app:tagMargin="@dimen/margin4"
+                        app:tagMargin="@dimen/margin5"
                         app:textPaddingBottom="@dimen/margin3"
                         app:textPaddingLeft="@dimen/margin5"
                         app:textPaddingRight="@dimen/margin5"
@@ -343,7 +344,8 @@
                         android:id="@+id/ll_group1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        >
 
                         <TextView
                             android:id="@+id/item2"

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +81,7 @@ public class TagView extends RelativeLayout {
         this.textPaddingTop = (int) typeArray.getDimension(R.styleable.TagView_textPaddingTop, ResolutionUtil.dpToPx(this.getContext(), Constants.DEFAULT_TAG_TEXT_PADDING_TOP));
         this.texPaddingBottom = (int) typeArray.getDimension(R.styleable.TagView_textPaddingBottom, ResolutionUtil.dpToPx(this.getContext(), Constants.DEFAULT_TAG_TEXT_PADDING_BOTTOM));
         typeArray.recycle();
-        mWidth = ResolutionUtil.getScreenWidth(context);
+        mWidth = (int) (ResolutionUtil.getScreenWidth(context)*2/3.3);
         // this.setWillNotDraw(false);
     }
 
@@ -155,6 +157,13 @@ public class TagView extends RelativeLayout {
             params.setMargins(textPaddingLeft, textPaddingTop, textPaddingRight, texPaddingBottom);
             tagView.setLayoutParams(params);
             tagView.setTextColor(tag.tagTextColor);
+            try {
+                Typeface face = Typeface.createFromAsset(this.getContext()
+                        .getAssets(), "fonts/RobotoSlab-Regular.ttf");
+                tagView.setTypeface(face);
+            } catch (Exception e) {
+                Log.d("ERROR set FONTS", e.getMessage());
+            }
             tagView.setTextSize(TypedValue.COMPLEX_UNIT_SP, tag.tagTextSize);
             tagLayout.setOnClickListener(new OnClickListener() {
                 @Override

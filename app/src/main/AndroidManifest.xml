@@ -26,6 +26,7 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="com.palfed.android.menu.permission.C2D_MESSAGE" />
     <application
+        android:name=".activities.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -85,7 +86,11 @@
                    />
             </intent-filter>
         </service>
-
+        <!--<receiver android:name="com.palfed.android.menu.activities.MyReceiver" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.palfed.USER_ACTION" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"

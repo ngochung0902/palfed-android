@@ -107,6 +107,7 @@ public class WebNotification extends Activity implements View.OnClickListener {
 
         }
         QTSRun.setDestination(getApplicationContext(), "");
+        QTSRun.setBadge(getApplicationContext(),0);
         QTSRun.setFontTV(getApplicationContext(), lbTitle, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
         webBrowser.getSettings().setJavaScriptEnabled(true);
         webBrowser.getSettings().setAllowFileAccess(true);

@@ -98,7 +98,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         TextView tvLink, align_top_menu, tvNoFound;
 //        TagContainerLayout mTagContainerLayout;
         TagView tagView;
-        Tag tag ;
+
     }
     @Override
     public View getChildView(int groupPosition, final int childPosition,
@@ -178,7 +178,6 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         QTSRun.setLayoutView(holder.iconSpace, w/14,w/14);
         QTSRun.setLayoutView(holder.iconMile, w / 14, w / 14);
         QTSRun.setLayoutView(holder.btnAdd, (int)(w / 3.5), (int) _context.getResources().getDimension(R.dimen.margin30));
-
         QTSRun.setFontTV(_context, holder.title, QTSConst.FONT_ROBOTOSLAB_BOLD);
         QTSRun.setFontTV(_context, holder.tt_Restaurant, QTSConst.FONT_ROBOTOSLAB_BOLD);
         QTSRun.setFontTV(_context, holder.content, QTSConst.FONT_ROBOTOSLAB_REGULAR);
@@ -211,28 +210,23 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         }else{
             holder.tvName.setText("");
         }
+        holder.tagView.removeAllTags();
 
         if (childText.getTags() != null){
 //            holder.mTagContainerLayout.setVisibility(View.VISIBLE);
             holder.tagView.setVisibility(View.VISIBLE);
-            holder.tagView.removeAllTags();
             for (int i=0; i<childText.getTags().size();i++){
-                holder.tag = new Tag(childText.getTags().get(i).getTag());
-                holder.tag.tagTextColor = Color.parseColor("#FFFFFF");
-                holder.tag.layoutColor =  childText.getTags().get(i).getMcolor();
-//                tag.layoutColorPress = Color.parseColor("#555555");
-//or tag.background = this.getResources().getDrawable(R.drawable.custom_bg);
-                holder.tag.radius = 5f;
-                holder.tag.tagTextSize = 12f;
-                holder.tag.layoutBorderSize = 1f;
-                holder.tag.layoutBorderColor = Color.parseColor("#FFFFFF");
-                holder.tag.isDeletable = false;
-                holder.tagView.addTag(holder.tag);
-//                holder.mTagContainerLayout.addTag(childText.getTags().get(i).getTag());
-//                holder.mTagContainerLayout.setTagBackgroundColor(childText.getTags().get(i).getMcolor());
-//                holder.mTagContainerLayout.setTagBorderColor(childText.getTags().get(i).getMcolor());
-
+                Tag tag = new Tag(childText.getTags().get(i).getTag());
+                tag.tagTextColor = Color.parseColor("#FFFFFF");
+                tag.layoutColor =  childText.getTags().get(i).getMcolor();
+                tag.radius = 5f;
+                tag.tagTextSize = 12f;
+                tag.layoutBorderSize = 1f;
+                tag.layoutBorderColor = Color.parseColor("#FFFFFF");
+                tag.isDeletable = false;
+                holder.tagView.addTag(tag);
             }
+
         }
         if (childText.getFood_image_url().length()>0){
             holder.imvAvatarTitle.setVisibility(View.VISIBLE);

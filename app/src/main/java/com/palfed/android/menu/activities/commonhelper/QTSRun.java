@@ -595,6 +595,18 @@ public class QTSRun {
 		editor.putInt("Badge", Badge);
 		editor.commit();
 	}
+	public static int getFr_request(Context context){
+		SharedPreferences sharedPre = context.getSharedPreferences(
+				QTSConst.PREFERENCES, Context.MODE_PRIVATE);
+		return sharedPre.getInt("Fr_request", 0);
+	}
+	public static void setFr_request(Context context, int Fr_request){
+		SharedPreferences sharedPre = context.getSharedPreferences(
+				QTSConst.PREFERENCES, Context.MODE_PRIVATE);
+		Editor editor = sharedPre.edit();
+		editor.putInt("Fr_request", Fr_request);
+		editor.commit();
+	}
 	public static String getFind(Context context){
 		SharedPreferences sharedPre = context.getSharedPreferences(
 				QTSConst.PREFERENCES, Context.MODE_PRIVATE);
@@ -620,6 +632,20 @@ public class QTSRun {
 				QTSConst.PREFERENCES, 0);
 		Editor editor = sharedPreferences.edit();
 		editor.putBoolean("IsShow", IsShow);
+		editor.commit();
+	}
+	public static boolean getIsOpenApp(Context context) {
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences sharedPreferences = context.getSharedPreferences(
+				QTSConst.PREFERENCES, mode);
+		return sharedPreferences.getBoolean("isOpen", false);
+	}
+
+	public static void setIsOpenApp(Context context, boolean isOpen) {
+		SharedPreferences sharedPreferences = context.getSharedPreferences(
+				QTSConst.PREFERENCES, 0);
+		Editor editor = sharedPreferences.edit();
+		editor.putBoolean("isOpen", isOpen);
 		editor.commit();
 	}
 	////////////////////save form information ///////////////
@@ -774,20 +800,20 @@ public class QTSRun {
 			editor.commit();
 		}
 		// /////////////////////////
-				public static boolean getIsCheck(Context context) {
-					int mode = Activity.MODE_PRIVATE;
-					SharedPreferences sharedPreferences = context.getSharedPreferences(
-							QTSConst.PREFERENCES, mode);
-					return sharedPreferences.getBoolean("ischeck", false);
-				}
+		public static boolean getIsCheck(Context context) {
+			int mode = Activity.MODE_PRIVATE;
+			SharedPreferences sharedPreferences = context.getSharedPreferences(
+					QTSConst.PREFERENCES, mode);
+			return sharedPreferences.getBoolean("ischeck", false);
+		}
 
-				public static void setIsCheck(Context context, boolean ischeck) {
-					SharedPreferences sharedPreferences = context.getSharedPreferences(
-							QTSConst.PREFERENCES, 0);
-					Editor editor = sharedPreferences.edit();
-					editor.putBoolean("ischeck", ischeck);
-					editor.commit();
-				}
+	public static void setIsCheck(Context context, boolean ischeck) {
+		SharedPreferences sharedPreferences = context.getSharedPreferences(
+				QTSConst.PREFERENCES, 0);
+		Editor editor = sharedPreferences.edit();
+		editor.putBoolean("ischeck", ischeck);
+		editor.commit();
+	}
 	//===========login with facebook ==========
 	public static boolean getIsFBLogin(Context context) {
 		int mode = Activity.MODE_PRIVATE;

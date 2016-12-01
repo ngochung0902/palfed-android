@@ -24,9 +24,12 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.palfed.android.menu.activities.commonhelper.QTSConst;
@@ -58,8 +61,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
+
+import static com.facebook.internal.CallbackManagerImpl.RequestCodeOffset.Login;
 
 /**
  * Created by Android QTS on 12/17/2015.
@@ -103,15 +109,11 @@ public class LoginActivity extends Activity {
     //------------------
     private Button loginButton;
     private CallbackManager callbackManager;
-    private AccessTokenTracker accessTokenTracker;
+    private LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //============== init facebosk login ============
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-
         setContentView(R.layout.login_activity);
         ivLogo = (ImageView) findViewById(R.id.ivLogo);
         ivbgLogin = (ImageView) findViewById(R.id.ivbgLogin);
@@ -149,43 +151,40 @@ public class LoginActivity extends Activity {
             longitude ="";
             latitude = "";
         }
-
-//        edEmail.setText(QTSRun.getemail(getApplicationContext()));
-//        edPassword.setText(QTSRun.getLname(getApplicationContext()));
-//        Log.e("Time zone", "=" + timeZone());
         QTSRun.setTimezone(getApplicationContext(), timeZone());
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        // App code
-                        Log.e("On Successfull", "User ID: "
-                                + loginResult.getAccessToken().getUserId()
-                                + "\n" +
-                                "Auth Token: "
-                                + loginResult.getAccessToken().getToken());
-                        QTSRun.setIsFBLogin(getApplicationContext(), true);
-                        facebook_access_token = loginResult.getAccessToken().getToken();
-                        email="";
-                        password="";
-                        localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                .format(Calendar.getInstance().getTime()).toString();
-                        new GetData().execute();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        // App code
-                        Log.e("Login Facebook", "Login attempt canceled.");
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        // App code
-                        Log.e("Login Facebook", "Login attempt failed.");
-                        exception.printStackTrace();
-                    }
-                });
+        callbackManager = CallbackManager.Factory.create();
+//        LoginManager.getInstance().registerCallback(callbackManager,
+//                new FacebookCallback<LoginResult>() {
+//                    @Override
+//                    public void onSuccess(LoginResult loginResult) {
+//                        // App code
+//                        Log.e("On Successfull", "User ID: "
+//                                + loginResult.getAccessToken().getUserId()
+//                                + "\n" +
+//                                "Auth Token: "
+//                                + loginResult.getAccessToken().getToken());
+//                        QTSRun.setIsFBLogin(getApplicationContext(), true);
+//                        facebook_access_token = loginResult.getAccessToken().getToken();
+//                        email="";
+//                        password="";
+//                        localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//                                .format(Calendar.getInstance().getTime()).toString();
+//                        new GetData().execute();
+//                    }
+//
+//                    @Override
+//                    public void onCancel() {
+//                        // App code
+//                        Log.e("Login Facebook", "Login attempt canceled.");
+//                    }
+//
+//                    @Override
+//                    public void onError(FacebookException exception) {
+//                        // App code
+//                        Log.e("Login Facebook", "Login attempt failed.");
+//                        exception.printStackTrace();
+//                    }
+//                });
         GCMClientManager pushClientManager = new GCMClientManager(this, PROJECT_NUMBER);
         pushClientManager.registerIfNeeded(new GCMClientManager.RegistrationCompletedHandler() {
             @Override
@@ -256,33 +255,10 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 email="";
                 password="";
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "user_friends"));
+                initializeFacebook();
+//                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile","email", "user_friends"));
             }
         });
-
-//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                Log.e("On Successfull", "User ID: "
-//                        + loginResult.getAccessToken().getUserId()
-//                        + "\n" +
-//                        "Auth Token: "
-//                        + loginResult.getAccessToken().getToken());
-//                QTSRun.setIsFBLogin(getApplicationContext(), true);
-//                facebook_access_token = loginResult.getAccessToken().getToken();
-//                new GetData().execute();
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                Log.e("On cancel", "Login attempt canceled.");
-//            }
-//
-//            @Override
-//            public void onError(FacebookException e) {
-//                Log.e("On Error", "Login attempt failed.");
-//            }
-//        });
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,7 +269,69 @@ public class LoginActivity extends Activity {
         });
     }
 
+    LoginManager getLoginManager() {
+        if (loginManager == null) {
+            loginManager = LoginManager.getInstance();
+        }
+        return loginManager;
+    }
+    private void initializeFacebook() {
+        loginManager = getLoginManager();
+        loginManager.logInWithReadPermissions(this,
+                Arrays.asList("public_profile", "email"));
 
+        callbackManager = CallbackManager.Factory.create();
+
+        loginManager.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+
+                    @Override
+                    public void onSuccess(final LoginResult result) {
+                        Log.e("LoginActivity", "Login.initializeFacebook.onSuccess Granted Permissions= " + result.getRecentlyGrantedPermissions().toString());
+                        Log.e("LoginActivity", "Login.initializeFacebook.onSuccess");
+                        facebook_access_token = result.getAccessToken().getToken();
+                        QTSRun.setIsFBLogin(getApplicationContext(), true);
+                        email="";
+                        password="";
+                        localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                .format(Calendar.getInstance().getTime()).toString();
+                        new GetData().execute();
+//                        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(),
+//                                new GraphRequest.GraphJSONObjectCallback() {
+//
+//                                    @Override
+//                                    public void onCompleted(JSONObject object,
+//                                                            GraphResponse response) {
+//                                        if (response.getError() != null) {
+//                                            // handle error
+//                                        } else {
+//
+//                                        }
+//
+//                                    }
+//                                });
+//                        Bundle parameters = new Bundle();
+//                        parameters.putString("fields", "id,name,email,gender,birthday");
+//                        request.setParameters(parameters);
+//                        request.executeAsync();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.e("LoginActivity", "Login.initializeFacebook.onError " + error.getMessage());
+                        if (error instanceof FacebookAuthorizationException) {
+                            if (AccessToken.getCurrentAccessToken() != null) {
+                                LoginManager.getInstance().logOut();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.e("LoginActivity", "Login.initializeFacebook.onCancel ");
+                    }
+                });
+    }
     public static String timeZone()
     {
         Calendar calendar = Calendar.getInstance();
@@ -589,6 +627,8 @@ public class LoginActivity extends Activity {
                 QTSRun.setTokenhash(getApplicationContext(), md5(token_hash));
                 QTSRun.setToken(getApplicationContext(), token);
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
+                QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object.getFriend_request_count()));
+                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object.getNotification_count()));
                 ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(us_Object.getNotification_count()));
 //                Log.e("token_hash => MD5", md5(token_hash));
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);

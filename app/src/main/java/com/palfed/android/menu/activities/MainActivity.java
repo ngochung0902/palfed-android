@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,14 +60,13 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public class MainActivity extends Activity implements View.OnClickListener{
     private ImageView ivLogo, ivNotifications, ivUsers, ivCalendar, ivHome, ivLogout;
     private CircularImageView ivAvatar;
-    private TextView tvNoFound, tv_Notif;
+    TextView tvNoFound, tv_Notif, tv_friendReq, tvNoRequest;
     private Switch mSwitch;
     private ExpandableListView expListView;
     private ExpandableListView expListView1;
     private LinearLayout rl_Group1, rl_Group2;
     private int w, h;
-    private String localtime;
-    public static int getBroadcast;
+    String localtime;
     JSONParser jsonParser = new JSONParser();
     JSONObject json = null;
     private ExpandListAdapter listAdapter;
@@ -81,8 +81,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
     HashMap<MenuObject, List<OptionObject>> listChild1 = null;
 
     private ExpandableListView mExpandableListFriend;
-    ArrayList<FriendObjParent> arrayParents = null;
+    List<FriendObjParent> arrayParents = null;
+    private MyCustomAdapter myCustomAdapter;
 
+    boolean isShowRequest = true;
     boolean isClick = true;
     boolean isTickCal = false;
     boolean isRequest = true;
@@ -92,7 +94,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private String latitude="";
 
     private GPSTracker gps;
-
+    MyReceiver myReceiver;
+    IntentFilter intentFilter;
     private ProgressDialog pDialog;
     UserObject us_Object1;
 
@@ -102,6 +105,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         gps = new GPSTracker(this);
+        QTSRun.setIsOpenApp(getApplicationContext(),true);
         rl_Group1 = (LinearLayout) findViewById(R.id.rl_group1);
         rl_Group2 = (LinearLayout) findViewById(R.id.rl_group2);
         ivLogo = (ImageView) findViewById(R.id.ivLogo);
@@ -113,17 +117,15 @@ public class MainActivity extends Activity implements View.OnClickListener{
         ivAvatar = (CircularImageView) findViewById(R.id.ivAvatar);
         mSwitch = (Switch) findViewById(R.id.switch_main);
         tvNoFound = (TextView) findViewById(R.id.tvNoFound);
+        tvNoRequest = (TextView) findViewById(R.id.tvNoRequest);
         tv_Notif = (TextView) findViewById(R.id.tv_Notif);
+        tv_friendReq = (TextView) findViewById(R.id.tv_friendReq);
         expListView = (ExpandableListView) findViewById(R.id.lvExp1);
         expListView.setGroupIndicator(null);
         expListView1 = (ExpandableListView) findViewById(R.id.lvExp2);
         expListView1.setGroupIndicator(null);
-//        View view = getLayoutInflater().inflate(R.layout.activity_footer, expListView, false);
-//        footerLayout = (LinearLayout) view.findViewById(R.id.footer_layout);
         mExpandableListFriend = (ExpandableListView) findViewById(R.id.lvExpFooter);
-//        lvFooter = (NonScrollListView) view.findViewById(R.id.lvFooter);
         mExpandableListFriend.setGroupIndicator(null);
-//        expListView.addFooterView(footerLayout);
 
         Log.e("number baged", QTSRun.getBadge(getApplication())+"");
         if (QTSRun.getBadge(getApplicationContext())>0){
@@ -132,13 +134,24 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }else{
             tv_Notif.setVisibility(View.INVISIBLE);
         }
-
-
+        if (QTSRun.getFr_request(getApplicationContext())>0){
+            tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+            tv_friendReq.setVisibility(View.VISIBLE);
+        }else{
+            tv_friendReq.setVisibility(View.INVISIBLE);
+        }
+//keep reference to Activity context
+        MyApplication myApplication = (MyApplication) this.getApplicationContext();
+        myApplication.mainActivity = this;
+        myReceiver = new MyReceiver();
+        intentFilter = new IntentFilter(QTSConst.ACTION_BROADCAST);
         _imageLoader = new ImageLoaderAvar(MainActivity.this);
         w = QTSRun.GetWidthDevice(getApplicationContext());
         h = QTSRun.GetHeightDevice(getApplicationContext());
 
         QTSRun.setFontTV(getApplicationContext(),tv_Notif,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setFontTV(getApplicationContext(),tv_friendReq,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setFontTV(getApplicationContext(),tvNoRequest,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
         QTSRun.setFontTV(getApplicationContext(), tvNoFound, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
         QTSRun.setLayoutView(ivLogo, w/4,w/4*143/190);
         QTSRun.setLayoutView(mSwitch, w/4,w/4*143/190);
@@ -208,6 +221,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 finish();
             }
         }else{
+            QTSRun.setNotifMsg(getApplicationContext(),false);
             QTSRun.setIsRegister(getApplicationContext(),true);
             Bundle bundle = getIntent().getExtras();
             UserObject usersss = getIntent().getExtras().getParcelable("user_object");
@@ -221,24 +235,33 @@ public class MainActivity extends Activity implements View.OnClickListener{
             listMenu = new ArrayList<MenuObject>();
             listChild = new HashMap<MenuObject,List<OptionObject>>();
             if (arrayParents.size()>0){
-                isRequest = true;
+                isRequest = false;
                 mExpandableListFriend.setVisibility(View.VISIBLE);
                 expListView.setVisibility(View.GONE);
                 expListView1.setVisibility(View.GONE);
+                tv_friendReq.setVisibility(View.GONE);
                 ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                 isClickRequest = true;
-                mExpandableListFriend.setAdapter(new MyCustomAdapter(MainActivity.this, arrayParents));
+                myCustomAdapter = new MyCustomAdapter(MainActivity.this, arrayParents);
+                mExpandableListFriend.setAdapter(myCustomAdapter);
+                myCustomAdapter.notifyDataSetChanged();
                 for (int i = 0; i < arrayParents.size(); i++) {
 //                    setListViewHeight(mExpandableListFriend,i);
                     mExpandableListFriend.expandGroup(i);
                 }
             }else {
-                isRequest = false;
+                isRequest = true;
                 expListView.setVisibility(View.VISIBLE);
-                expListView1.setVisibility(View.VISIBLE);
+                expListView1.setVisibility(View.GONE);
                 mExpandableListFriend.setVisibility(View.GONE);
                 ivUsers.setBackgroundResource(R.drawable.ic_users);
                 isClickRequest = false;
+                if (QTSRun.getFr_request(getApplicationContext())>0){
+                    tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+                    tv_friendReq.setVisibility(View.VISIBLE);
+                }else{
+                    tv_friendReq.setVisibility(View.INVISIBLE);
+                }
             }
             if (listParent.size() > 0){
                 Log.e("token_hash Main", QTSRun.getTokenhash(getApplicationContext()));
@@ -257,6 +280,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
             }
             if (listParent1.size() > 0){
+
                 listMenu1 = (ArrayList<MenuObject>) listParent1.get(0).getMenuObjectArrayList();
                 for (int ix = 0; ix <listMenu1.size(); ix ++){
                     listOptions1 = new ArrayList<OptionObject>();
@@ -314,74 +338,90 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
                 isTickCal = false;
                 tvNoFound.setVisibility(View.GONE);
-            if (!isRequest){
-                isRequest = true;
-                expListView.setVisibility(View.GONE);
-                expListView1.setVisibility(View.GONE);
-                mExpandableListFriend.setVisibility(View.VISIBLE);
-                ivUsers.setBackgroundResource(R.drawable.ic_menulist);
-
-            }else {
-                isRequest = false;
+                tvNoRequest.setVisibility(View.GONE);
+            Log.e("MainActivity","isRequest:" +isRequest);
+            if (isRequest){
                 if (isClickRequest){
-//                    isRequest = true;
-                    expListView.setVisibility(View.VISIBLE);
+                    isRequest = false;
+                    expListView.setVisibility(View.GONE);
                     expListView1.setVisibility(View.GONE);
-                    mExpandableListFriend.setVisibility(View.GONE);
-                    ivUsers.setBackgroundResource(R.drawable.ic_users);
+                    mExpandableListFriend.setVisibility(View.VISIBLE);
+                    ivUsers.setBackgroundResource(R.drawable.ic_menulist);
+                    tv_friendReq.setVisibility(View.GONE);
                 }else {
                     Intent intent = new Intent(MainActivity.this,WebBrowser.class);
                     intent.putExtra("url",listParent.get(0).getFriend_requests_url());
                     startActivity(intent);
                 }
+            }else {
+//                if (isClickRequest){
+                    isRequest = true;
+                    expListView.setVisibility(View.VISIBLE);
+                    expListView1.setVisibility(View.GONE);
+                    mExpandableListFriend.setVisibility(View.GONE);
+                    ivUsers.setBackgroundResource(R.drawable.ic_users);
+                    if (QTSRun.getFr_request(getApplicationContext())>0){
+                        tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+                        tv_friendReq.setVisibility(View.VISIBLE);
+                    }else{
+                        tv_friendReq.setVisibility(View.INVISIBLE);
+                    }
             }
-
         }else if (v == ivLogout){
             ShowDialog();
 
         }else if (v == ivCalendar){
-            if (!isTickCal){
-                if (isRequest){
-                    mExpandableListFriend.setVisibility(View.GONE);
-                }
-                ivCalendar.setBackgroundResource(R.drawable.ic_calendar2);
-                isTickCal = true;
-                if (expListView1.getCount()>0){
-                    for (int i = 0; i < listMenu1.size(); i++) {
-                        expListView1.expandGroup(i);
-                    }
-                    tvNoFound.setVisibility(View.GONE);
-                    expListView1.setVisibility(View.VISIBLE);
-                    expListView.setVisibility(View.GONE);
-                }else{
-                    tvNoFound.setVisibility(View.VISIBLE);
-                    expListView1.setVisibility(View.GONE);
-                    expListView.setVisibility(View.GONE);
-                }
+            isRequest = true;
+            mExpandableListFriend.setVisibility(View.GONE);
+            ivUsers.setBackgroundResource(R.drawable.ic_users);
+            tvNoRequest.setVisibility(View.GONE);
+            if (QTSRun.getFr_request(getApplicationContext())>0){
+                tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+                tv_friendReq.setVisibility(View.VISIBLE);
             }else{
-                isTickCal = false;
-                ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
-
-                expListView1.setVisibility(View.GONE);
-                if (isRequest){
-                    mExpandableListFriend.setVisibility(View.VISIBLE);
-                    expListView.setVisibility(View.GONE);
-                }else {
-                    expListView.setVisibility(View.VISIBLE);
-                }
-                if (expListView.getCount()>0){
-                    for (int i = 0; i < listMenu.size(); i++) {
-                        expListView.expandGroup(i);
-                    }
-                    expListView.setVisibility(View.VISIBLE);
-                    tvNoFound.setVisibility(View.GONE);
-                }else{
-                    tvNoFound.setVisibility(View.VISIBLE);
-                    expListView1.setVisibility(View.GONE);
-                    expListView.setVisibility(View.GONE);
-                }
-
+                tv_friendReq.setVisibility(View.INVISIBLE);
             }
+                if (!isTickCal) {
+                    mExpandableListFriend.setVisibility(View.GONE);
+                    ivCalendar.setBackgroundResource(R.drawable.ic_calendar2);
+                    isTickCal = true;
+                    if (expListView1.getCount() > 0) {
+                        for (int i = 0; i < listMenu1.size(); i++) {
+                            expListView1.expandGroup(i);
+                        }
+                        tvNoFound.setVisibility(View.GONE);
+                        expListView1.setVisibility(View.VISIBLE);
+                        expListView.setVisibility(View.GONE);
+                    } else {
+                        tvNoFound.setVisibility(View.VISIBLE);
+                        expListView1.setVisibility(View.GONE);
+                        expListView.setVisibility(View.GONE);
+                    }
+                } else {
+                    isTickCal = false;
+                    ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
+
+                    expListView1.setVisibility(View.GONE);
+                    if (!isRequest) {
+                        mExpandableListFriend.setVisibility(View.VISIBLE);
+                        expListView.setVisibility(View.GONE);
+                    } else {
+                        expListView.setVisibility(View.VISIBLE);
+                        mExpandableListFriend.setVisibility(View.GONE);
+                    }
+                    if (expListView.getCount() > 0) {
+                        for (int i = 0; i < listMenu.size(); i++) {
+                            expListView.expandGroup(i);
+                        }
+                        expListView.setVisibility(View.VISIBLE);
+                        tvNoFound.setVisibility(View.GONE);
+                    } else {
+                        tvNoFound.setVisibility(View.VISIBLE);
+                        expListView1.setVisibility(View.GONE);
+                        expListView.setVisibility(View.GONE);
+                    }
+
+                }
         }
     }
 
@@ -417,6 +457,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             super.onPostExecute(s);
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
                 isTickCal = false;
+                isShowRequest = false;
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
                 localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
@@ -426,11 +467,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }
     }
-    class GetData extends AsyncTask<String, Void, String> {
+    public class GetData extends AsyncTask<String, Void, String> {
         String token_hash="";
         String login_token = "";
         String token = QTSRun.getToken(getApplicationContext());
         String secret = QTSRun.getSecret(getApplicationContext());
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -438,6 +480,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
             pDialog.setMessage("Refreshing menu...");
             pDialog.show();
             pDialog.setCancelable(false);
+            tv_Notif.setVisibility(View.INVISIBLE);
+            QTSRun.setNotifMsg(getApplicationContext(),false);
+            isTickCal = false;
+            ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
         }
 
         @Override
@@ -458,6 +504,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
                     if (status.equalsIgnoreCase("Success")) {
                         listParent = new ArrayList<ParentObject>();
+                        if (arrayParents != null){
+                            arrayParents.clear();
+                            arrayParents = null;
+                        }
                         arrayParents = new ArrayList<FriendObjParent>();
                         ParentObject pr_Object = new ParentObject();
                         ParentObject pr_Object1 = new ParentObject();
@@ -530,6 +580,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         listChild = new HashMap<MenuObject,List<OptionObject>>();
                         listMenu1 = new ArrayList<MenuObject>();
                         listChild1 = new HashMap<MenuObject,List<OptionObject>>();
+                        int i1 =0;
                         for (int i= 0; i <arr_menu.length(); i ++){
                             JSONObject item_menu = arr_menu.getJSONObject(i);
                             MenuObject mn_Object = new MenuObject();
@@ -677,7 +728,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             listChild.put(listMenu.get(i),listOptions);
                             if (listOptions1.size()>0){
                                 listMenu1.add(mn_Object1);
-                                listChild1.put(listMenu1.get(i),listOptions1);
+                                listChild1.put(listMenu1.get(i1),listOptions1);
+                                i1++;
                             }
 
                         }
@@ -704,7 +756,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
             pDialog.cancel();
 
             if (s.equalsIgnoreCase("Success")) {
-                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
+//                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
+                QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object1.getFriend_request_count()));
                 QTSRun.setToken(getApplicationContext(), token);
                 QTSRun.setTokenhash(getApplicationContext(), md5(token_hash));
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
@@ -716,24 +769,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }else{
                     tv_Notif.setVisibility(View.INVISIBLE);
                 }
-                if (arrayParents.size()>0){
-                    isRequest = true;
-                    isClickRequest = true;
-                    mExpandableListFriend.setVisibility(View.VISIBLE);
-                    expListView.setVisibility(View.GONE);
-                    expListView1.setVisibility(View.GONE);
-                    ivUsers.setBackgroundResource(R.drawable.ic_menulist);
-                    mExpandableListFriend.setAdapter(new MyCustomAdapter(MainActivity.this, arrayParents));
-                    for (int i = 0; i < arrayParents.size(); i++) {
-                        mExpandableListFriend.expandGroup(i);
-                    }
-                }else {
-                    isRequest = false;
-                    isClickRequest = false;
-                    expListView.setVisibility(View.VISIBLE);
-                    expListView1.setVisibility(View.VISIBLE);
-                    mExpandableListFriend.setVisibility(View.GONE);
-                    ivUsers.setBackgroundResource(R.drawable.ic_users);
+                if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
+                    tv_friendReq.setText(""+us_Object1.getFriend_request_count());
+                    tv_friendReq.setVisibility(View.VISIBLE);
+                }else{
+                    tv_friendReq.setVisibility(View.INVISIBLE);
                 }
                 listAdapter = new ExpandListAdapter(MainActivity.this,
                         listMenu, listChild);
@@ -752,6 +792,52 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     expListView.setVisibility(View.GONE);
                     expListView1.setVisibility(View.GONE);
                 }
+                Log.e("arrayParents","arrayParents.size : "+arrayParents.size());
+                if (arrayParents.size()>0){
+                    isRequest = false;
+                    isClickRequest = true;
+                    isShowRequest = true;
+                    mExpandableListFriend.setVisibility(View.VISIBLE);
+                    expListView.setVisibility(View.GONE);
+                    expListView1.setVisibility(View.GONE);
+                    tv_friendReq.setVisibility(View.GONE);
+                    tvNoRequest.setVisibility(View.GONE);
+                    ivUsers.setBackgroundResource(R.drawable.ic_menulist);
+                    myCustomAdapter = new MyCustomAdapter(MainActivity.this, arrayParents);
+                    mExpandableListFriend.setAdapter(myCustomAdapter);
+                    myCustomAdapter.notifyDataSetChanged();
+                    for (int i = 0; i < arrayParents.size(); i++) {
+                        mExpandableListFriend.expandGroup(i);
+                    }
+                }else {
+                    if (!isShowRequest){
+                        ivUsers.setBackgroundResource(R.drawable.ic_menulist);
+                        tvNoRequest.setVisibility(View.VISIBLE);
+                        mExpandableListFriend.setVisibility(View.GONE);
+                        expListView.setVisibility(View.GONE);
+                        expListView1.setVisibility(View.GONE);
+                        isShowRequest = true;
+                        isRequest = false;
+                        isClickRequest = false;
+                    }else {
+                        isRequest = true;
+                        isClickRequest = false;
+                        tvNoRequest.setVisibility(View.GONE);
+                        expListView.setVisibility(View.VISIBLE);
+                        expListView1.setVisibility(View.GONE);
+                        mExpandableListFriend.setVisibility(View.GONE);
+                        ivUsers.setBackgroundResource(R.drawable.ic_users);
+                        if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
+                            tv_friendReq.setText(""+us_Object1.getFriend_request_count());
+                            tv_friendReq.setVisibility(View.VISIBLE);
+                        }else{
+                            tv_friendReq.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                }
+                Log.e("MainActivity","isRequest Loading:" +isRequest);
+
             } else {
                 QTSRun.showToast(getApplicationContext(), "Login failed");
                 QTSRun.setIsRegister(getApplicationContext(), false);
@@ -803,7 +889,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }else{
                 tv_Notif.setVisibility(View.INVISIBLE);
             }
-
+            if (QTSRun.getFr_request(getApplicationContext())>0){
+                tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+                tv_friendReq.setVisibility(View.VISIBLE);
+            }else{
+                tv_friendReq.setVisibility(View.INVISIBLE);
+            }
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
                 isTickCal = false;
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
@@ -853,56 +944,135 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     public void onResume() {
         super.onResume();
+        QTSRun.setIsOpenApp(getApplicationContext(),true);
+        registerReceiver(myReceiver, intentFilter);
 
-            try {
-                //        if (MainActivity.getBroadcast == 1){
-                if (QTSRun.getNotifMsg(getApplicationContext())){
-                    QTSRun.setNotifMsg(getApplicationContext(),false);
-                    IntentFilter ifi = new IntentFilter();
-                    ifi.addAction(QTSConst.ACTION_BROADCAST);
-                    MainActivity.this.registerReceiver(bReceivers, ifi);
+
+//            try {
+//                //        if (MainActivity.getBroadcast == 1){
+//                if (QTSRun.getNotifMsg(getApplicationContext())){
+//                    QTSRun.setNotifMsg(getApplicationContext(),false);
+//                    IntentFilter ifi = new IntentFilter();
+//                    ifi.addAction(QTSConst.ACTION_BROADCAST);
+//                    MainActivity.this.registerReceiver(bReceivers, ifi);
+//                }
+////            Log.e("number baged on resum", QTSRun.getBadge(getApplication()) + ": broadcast");
+////            MainActivity.getBroadcast = 0;
+////        }
+//            }catch (Exception ex){
+//                ex.printStackTrace();
+//            }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(myReceiver);
+        QTSRun.setIsOpenApp(getApplicationContext(),false);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        QTSRun.setIsOpenApp(getApplicationContext(),false);
+    }
+
+    public class MyReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MainActivity mainActivity = ((MyApplication) context.getApplicationContext()).mainActivity;
+            int numerBadge = intent.getIntExtra("badge", 0);
+            int numerRequest = intent.getIntExtra("friend_requests", 0);
+            String url = "";
+            url = intent.getStringExtra("click_destination");
+            Log.e("badge", ": broadcast:"+numerBadge);
+            Log.e("friend_requests",": broadcast:"+numerRequest);
+
+            if (numerBadge > 0){
+                if (QTSRun.getIsOpenApp(context))
+                {
+                    mainActivity.tv_Notif.setText(numerBadge+"");
+                    mainActivity.tv_Notif.setVisibility(View.VISIBLE);
+
+                    mainActivity.localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            .format(Calendar.getInstance().getTime()).toString();
                 }
-//            Log.e("number baged on resum", QTSRun.getBadge(getApplication()) + ": broadcast");
-//            MainActivity.getBroadcast = 0;
-//        }
-            }catch (Exception ex){
-                ex.printStackTrace();
+            }else {
+                if (QTSRun.getBadge((context)) > 0) {
+                    mainActivity.tv_Notif.setText(QTSRun.getBadge(context) + "");
+                } else {
+                    mainActivity.tv_Notif.setVisibility(View.INVISIBLE);
+                }
+
             }
+            if (numerRequest > 0){
+                if (QTSRun.getIsOpenApp(context)) {
+                    mainActivity.tv_friendReq.setText(numerRequest + "");
+                    mainActivity.tv_friendReq.setVisibility(View.VISIBLE);
+                }
+            }else {
+                if (QTSRun.getFr_request(context) > 0) {
+                    mainActivity.tv_friendReq.setText(QTSRun.getFr_request(context) + "");
+                } else {
+                    mainActivity.tv_friendReq.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            if (url.toString().trim().length()!=0){
+                QTSRun.setDestination(context,url);
+            }
+            if (QTSRun.getIsOpenApp(context)) {
+                new GetData().execute();
+            }
+        }
 
     }
 
-    private BroadcastReceiver bReceivers = new BroadcastReceiver() {
-
-        @SuppressLint("LongLogTag")
-        @Override
-        public void onReceive(Context arg0, Intent arg1) {
-            int numerBadge = arg1.getIntExtra("badge", 0);
-            String url = "";
-            url = arg1.getStringExtra("click_destination");
-//            Log.e("number baged in broadcast",QTSRun.getBadge(getApplication())+": broadcast");
-            if (numerBadge > 0){
-                tv_Notif.setText(numerBadge+"");
-                tv_Notif.setVisibility(View.VISIBLE);
-            }else {
-                if (QTSRun.getBadge(getApplication()) > 0) {
-                    tv_Notif.setText(QTSRun.getBadge(getApplication()) + "");
-                } else {
-                    tv_Notif.setVisibility(View.INVISIBLE);
-                }
-
-            }
-            if (url.toString().trim().length()!=0){
-                QTSRun.setDestination(getApplicationContext(),url);
-            }
-        }
-    };
+    //    private BroadcastReceiver bReceivers = new BroadcastReceiver() {
+//
+//        @SuppressLint("LongLogTag")
+//        @Override
+//        public void onReceive(Context arg0, Intent arg1) {
+//            int numerBadge = arg1.getIntExtra("badge", 0);
+//            int numerRequest = arg1.getIntExtra("friend_requests", 0);
+//            String url = "";
+//            url = arg1.getStringExtra("click_destination");
+//            Log.e("badge",QTSRun.getBadge(getApplicationContext())+": broadcast:"+numerBadge);
+//            Log.e("friend_requests",QTSRun.getFr_request(getApplicationContext())+": broadcast:"+numerRequest);
+//            if (numerBadge > 0){
+//                tv_Notif.setText(numerBadge+"");
+//                tv_Notif.setVisibility(View.VISIBLE);
+//            }else {
+//                if (QTSRun.getBadge(getApplication()) > 0) {
+//                    tv_Notif.setText(QTSRun.getBadge(getApplicationContext()) + "");
+//                } else {
+//                    tv_Notif.setVisibility(View.INVISIBLE);
+//                }
+//
+//            }
+//            if (numerRequest > 0){
+//                tv_friendReq.setText(numerRequest+"");
+//                tv_friendReq.setVisibility(View.VISIBLE);
+//            }else {
+//                if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+//                    tv_friendReq.setText(QTSRun.getFr_request(getApplicationContext()) + "");
+//                } else {
+//                    tv_friendReq.setVisibility(View.INVISIBLE);
+//                }
+//            }
+//
+//            if (url.toString().trim().length()!=0){
+//                QTSRun.setDestination(getApplicationContext(),url);
+//            }
+//        }
+//    };
     public class MyCustomAdapter extends BaseExpandableListAdapter {
         private Context _context;
         private LayoutInflater inflater;
-        private ArrayList<FriendObjParent> mParent;
+        private List<FriendObjParent> mParent;
         private ImageLoaderAvar imageLoader;
         private int w = 1;
-        public MyCustomAdapter(Context context, ArrayList<FriendObjParent> parent){
+        public MyCustomAdapter(Context context, List<FriendObjParent> parent){
             this._context = context;
             mParent = parent;
             inflater = LayoutInflater.from(context);
@@ -996,7 +1166,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             QTSRun.setFontTV(_context, tvContent, QTSConst.FONT_ROBOTOSLAB_REGULAR);
 
             tvName.setText(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getName());
-            tvContent.setText("Friend with : " +mParent.get(groupPosition).getmArrayChildren().get(childPosition).getRequest_html());
+            tvContent.setText(Html.fromHtml("Friend with : " +mParent.get(groupPosition).getmArrayChildren().get(childPosition).getRequest_html()));
             imageLoader.DisplayImage(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getPicture_url(),ivAvatar);
             if (mParent.get(groupPosition).getIsRequest() == 1){
                 iconHome.setBackgroundResource(R.drawable.btn_check);

@@ -27,48 +27,44 @@ import me.leolin.shortcutbadger.ShortcutBadger;
  * Created by Android QTS on 1/25/2016.
  */
 public class PushNotificationService extends GcmListenerService {
-    public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
-    NotificationCompat.Builder builder;
 
     public static final String TAG = "PushNotificationService";
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-
         if (!data.isEmpty()) {
             int badgeCount = Integer.parseInt(data.getString("badge"));
+            int request_Count = Integer.parseInt(data.getString("friend_requests"));
             QTSRun.setNotifMsg(getApplicationContext(),true);
             boolean success = ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
             QTSRun.setBadge(getApplicationContext(), badgeCount);
+            QTSRun.setFr_request(getApplicationContext(), request_Count);
             if (data.toString().contains("click_destination")) {
                 QTSRun.setDestination(getApplicationContext(), data.getString("click_destination"));
                 Log.e(TAG, "click_destination: " + data.getString("click_destination"));
-
-                Intent intent = new Intent();
-                intent.setAction(QTSConst.ACTION_BROADCAST);
+                Intent intent = new Intent(QTSConst.ACTION_BROADCAST);
+//                intent.setAction(QTSConst.ACTION_BROADCAST);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("badge", badgeCount);
+                intent.putExtra("friend_requests", request_Count);
                 intent.putExtra("click_destination", data.getString("click_destination"));
                 sendBroadcast(intent);
                 sendWebNotification(data.getString("message"));
             } else {
 
                 QTSRun.setDestination(getApplicationContext(), "");
-                Intent intent = new Intent();
-                intent.setAction(QTSConst.ACTION_BROADCAST);
+                Intent intent = new Intent(QTSConst.ACTION_BROADCAST);
+//                intent.setAction(QTSConst.ACTION_BROADCAST);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("badge", badgeCount);
+                intent.putExtra("friend_requests", request_Count);
                 intent.putExtra("click_destination", "");
                 sendBroadcast(intent);
                 sendNotification(data.getString("message"));
             }
             Log.i(TAG, "Received: " + data.toString());
             //=========================
-
         }
-
     }
 
     private void sendNotification(String message) {
@@ -111,30 +107,6 @@ public class PushNotificationService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-//        QTSRun.Setweb(getApplicationContext(), true);
-    }
-    private void sendNotification1(String msg) {
-        Log.d(TAG, "Preparing to send notification...: " + msg);
-        mNotificationManager = (NotificationManager) getApplicationContext()
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-            Intent sendIntent =  new Intent(getApplicationContext(), WebBrowser.class);
-        sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        if (type.toString().trim().equalsIgnoreCase("1")) {
-            Log.d(TAG, "Preparing to send notification222...: ");
-            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                    sendIntent ,  PendingIntent.FLAG_ONE_SHOT);
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                    getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_push)
-                    .setContentTitle("PalFed")
-                    .setStyle(
-                            new NotificationCompat.BigTextStyle().bigText(msg))
-                    .setContentText(msg);
-            mBuilder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
-            mBuilder.setAutoCancel(true);
-            mBuilder.setContentIntent(contentIntent);
-            mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-//        }
     }
 
 }

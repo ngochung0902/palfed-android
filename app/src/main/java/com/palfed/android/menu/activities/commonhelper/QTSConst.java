@@ -14,7 +14,7 @@ public class QTSConst {
 	public static int TIME_WAIT = 6;
 	public static String PREFERENCES = "PALFED";
 
-	public static String ACTION_BROADCAST = "com.palfed.random";
+	public static String ACTION_BROADCAST = "com.palfed.USER_ACTION";
 	public static String ACTION_BROADCAST_WEB = "com.palfed.web";
 	public static String ACTION_BROADCAST_WEB_NOTIF = "com.palfed.webnotification";
 	// Fonts
