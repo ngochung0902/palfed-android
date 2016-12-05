@@ -15,7 +15,7 @@ public class MyApplication extends Application {
         super.onCreate();
         FacebookSdk.sdkInitialize(getApplicationContext());
     }
-
+    public static boolean isRefreshList = true;
     MainActivity mainActivity;
 
 }

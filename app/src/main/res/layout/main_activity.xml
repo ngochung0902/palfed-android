@@ -202,6 +202,20 @@
         android:layout_marginTop="@dimen/margin50"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/margin30"
+        android:text="Friend Menu"
+        android:gravity="center"
+        android:layout_margin="@dimen/margin5"
+        android:id="@+id/btnFriendMenu"
+        android:textSize="@dimen/font10"
+        android:paddingLeft="@dimen/margin5"
+        android:paddingRight="@dimen/margin5"
+        android:textColor="@color/white_color"
+        android:background="@drawable/btn_login"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
     <ExpandableListView
         android:id="@+id/lvExpFooter"
         android:layout_width="match_parent"

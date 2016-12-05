@@ -163,7 +163,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="SponSored Link"
+                        android:text="Sponsored Link"
                         android:textColor="@color/time_color"
                         android:textSize="@dimen/font10"
                         android:visibility="gone" />

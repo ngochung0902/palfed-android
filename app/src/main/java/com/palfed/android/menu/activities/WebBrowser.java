@@ -130,7 +130,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 QTSRun.setIsService(getApplicationContext(), false);
-//                stopService(intent);
+                MyApplication.isRefreshList = false;
                 Intent intent = new Intent(WebBrowser.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -290,6 +290,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (isLoading){
 //                QTSRun.setIsService(getApplicationContext(),false);
+                MyApplication.isRefreshList = false;
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

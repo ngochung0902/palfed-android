@@ -3,6 +3,7 @@ package com.palfed.android.menu.activities.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.palfed.android.menu.R;
 import java.util.HashMap;
 import java.util.List;
 
+import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
 
@@ -156,15 +158,11 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             holder.iconMile = (ImageView) convertView.findViewById(R.id.ivMiles);
             holder.align_top_menu = (TextView) convertView.findViewById(R.id.align_top_menu);
             holder.tvNoFound = (TextView) convertView.findViewById(R.id.tvNoFound);
-//            holder.mTagContainerLayout = (TagContainerLayout) convertView.findViewById(R.id.tagcontainerLayout);
             holder.tagView = (TagView) convertView.findViewById(R.id.tagview);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-//        if (_listDataChild.get(_listDataHeader.get(groupPosition)) == null){
-//            holder.tvNoFound.setVisibility(View.VISIBLE);
-//        }else holder.tvNoFound.setVisibility(View.GONE);
         QTSRun.setLayoutView(holder.btnAdd, (int)(w / 4.5), (int) _context.getResources().getDimension(R.dimen.margin30));
         QTSRun.setLayoutView(holder.btnMake,(int)(w/4.5),(int)_context.getResources().getDimension(R.dimen.margin30));
         QTSRun.setLayoutView(holder.btnInviteFriend,(int)(w/4),(int)_context.getResources().getDimension(R.dimen.margin30));
@@ -196,15 +194,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         QTSRun.setFontButton(_context, holder.btnMake, QTSConst.FONT_ROBOTOSLAB_REGULAR);
 
         holder.title.setText(childText.getTitle());
-        holder.content.setText(childText.getDescription());
-//        holder.mTagContainerLayout.setTagTypeface("RobotoSlab-Regular.ttf");
-//        holder.mTagContainerLayout.setBorderRadius(5f);
-//        holder.mTagContainerLayout.setBackgroundColor(_context.getResources().getColor(R.color.transparent));
-//        holder.mTagContainerLayout.setBorderWidth(0f);
-//        holder.mTagContainerLayout.setTagBorderRadius(5f);
-//        holder.mTagContainerLayout.setTagTextColor(_context.getResources().getColor(R.color.white_color));
-//        Log.e("getGroupView","childrent:"+childText.getTitle());
-//        You have not claimed any portions
+        holder.content.setText(Html.fromHtml(childText.getDescription()));
         if (childText.getName() != null ){
             holder.tvName.setText(childText.getName().toUpperCase());
         }else{
@@ -213,7 +203,6 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         holder.tagView.removeAllTags();
 
         if (childText.getTags() != null){
-//            holder.mTagContainerLayout.setVisibility(View.VISIBLE);
             holder.tagView.setVisibility(View.VISIBLE);
             for (int i=0; i<childText.getTags().size();i++){
                 Tag tag = new Tag(childText.getTags().get(i).getTag());
@@ -228,6 +217,15 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             }
 
         }
+        holder.tagView.setOnTagClickListener(new OnTagClickListener() {
+            @Override
+            public void onTagClick(int position, Tag tag) {
+                Log.e("url", childText.getUrl());
+                Intent intent = new Intent(_context,WebBrowser.class);
+                intent.putExtra("url",childText.getUrl());
+                _context.startActivity(intent);
+            }
+        });
         if (childText.getFood_image_url().length()>0){
             holder.imvAvatarTitle.setVisibility(View.VISIBLE);
             imageLoader.DisplayImage(childText.getFood_image_url(),holder.imvAvatarTitle);

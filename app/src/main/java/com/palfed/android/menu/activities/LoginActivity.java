@@ -344,6 +344,7 @@ public class LoginActivity extends Activity {
         String token = "";
         String secret = "";
         String login_token ="";
+        String message="";
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -374,6 +375,9 @@ public class LoginActivity extends Activity {
                 if (json != null) {
                     Log.d("Result", json.toString());
                     status = json.getString("status");
+                    if (json.toString().contains("message"))
+                        message = json.getString("message");
+
                     if (status.equalsIgnoreCase("Success")){
                         arrList = new ArrayList<ParentObject>();
                         arrList1 = new ArrayList<ParentObject>();
@@ -644,7 +648,12 @@ public class LoginActivity extends Activity {
                 startActivity(i);
                 finish();
             }else{
-                QTSRun.showToast(getApplicationContext(),"Login failed");
+                if (message.isEmpty()){
+                    QTSRun.showToast(getApplicationContext(),"Login failed");
+                }else {
+                    QTSRun.showToast(getApplicationContext(),message);
+                }
+
             }
         }
     }
