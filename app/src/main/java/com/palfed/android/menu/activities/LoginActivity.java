@@ -375,9 +375,6 @@ public class LoginActivity extends Activity {
                 if (json != null) {
                     Log.d("Result", json.toString());
                     status = json.getString("status");
-                    if (json.toString().contains("message"))
-                        message = json.getString("message");
-
                     if (status.equalsIgnoreCase("Success")){
                         arrList = new ArrayList<ParentObject>();
                         arrList1 = new ArrayList<ParentObject>();
@@ -606,13 +603,14 @@ public class LoginActivity extends Activity {
                         JSONObject item_user = json.getJSONObject("user");
                         us_Object = new UserObject();
                         us_Object.setProfile_pic_url(item_user.getString("profile_pic_url"));
-                        us_Object.setNotification_count(item_user.getString("notification_count"));
-                        us_Object.setFriend_request_count(item_user.getString("friend_request_count"));
-                        Log.e("LoginActivity","notification_count:" +item_user.getString("notification_count"));
-//                        pr_Object.set_userObjects(us_Object);
+                        us_Object.setNotification_count(item_user.get("notification_count").toString());
+                        if (!item_user.get("friend_request_count").toString().isEmpty())
+                            us_Object.setFriend_request_count(item_user.get("friend_request_count").toString());
+                        else us_Object.setFriend_request_count("0");
+//                        Log.e("LoginActivity","notification_count:" +item_user.get("friend_request_count"));
                         arrList.add(pr_Object);
                         arrList1.add(pr_Object1);
-                    }
+                    }else message = json.getString("message");
                     }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -631,9 +629,9 @@ public class LoginActivity extends Activity {
                 QTSRun.setTokenhash(getApplicationContext(), md5(token_hash));
                 QTSRun.setToken(getApplicationContext(), token);
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
-                QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object.getFriend_request_count()));
                 QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object.getNotification_count()));
                 ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(us_Object.getNotification_count()));
+                QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object.getFriend_request_count()));
 //                Log.e("token_hash => MD5", md5(token_hash));
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
@@ -651,7 +649,7 @@ public class LoginActivity extends Activity {
                 if (message.isEmpty()){
                     QTSRun.showToast(getApplicationContext(),"Login failed");
                 }else {
-                    QTSRun.showToast(getApplicationContext(),message);
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
                 }
 
             }

@@ -598,13 +598,13 @@ public class QTSRun {
 	public static int getFr_request(Context context){
 		SharedPreferences sharedPre = context.getSharedPreferences(
 				QTSConst.PREFERENCES, Context.MODE_PRIVATE);
-		return sharedPre.getInt("Fr_request", 0);
+		return sharedPre.getInt("fr_request", 0);
 	}
-	public static void setFr_request(Context context, int Fr_request){
+	public static void setFr_request(Context context, int fr_request){
 		SharedPreferences sharedPre = context.getSharedPreferences(
 				QTSConst.PREFERENCES, Context.MODE_PRIVATE);
 		Editor editor = sharedPre.edit();
-		editor.putInt("Fr_request", Fr_request);
+		editor.putInt("fr_request", fr_request);
 		editor.commit();
 	}
 	public static String getFind(Context context){

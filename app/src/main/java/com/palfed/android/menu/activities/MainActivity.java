@@ -347,6 +347,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             tvNoRequest.setVisibility(View.GONE);
             btnFriendMenu.setVisibility(View.GONE);
             isRequest = true;
+            MyApplication.isRefreshList = false;
             expListView.setVisibility(View.VISIBLE);
             expListView1.setVisibility(View.GONE);
             mExpandableListFriend.setVisibility(View.GONE);
@@ -363,21 +364,23 @@ public class MainActivity extends Activity implements View.OnClickListener{
             tvNoFound.setVisibility(View.GONE);
             tvNoRequest.setVisibility(View.GONE);
             btnFriendMenu.setVisibility(View.GONE);
-            Log.e("MainActivity","isRequest:" +isRequest);
             if (isRequest){
                 if (isClickRequest){
                     isRequest = false;
+                    MyApplication.isRefreshList = true;
                     expListView.setVisibility(View.GONE);
                     expListView1.setVisibility(View.GONE);
                     mExpandableListFriend.setVisibility(View.VISIBLE);
                     ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                     tv_friendReq.setVisibility(View.GONE);
                 }else {
+                    MyApplication.isRefreshList = false;
                     Intent intent = new Intent(MainActivity.this,WebBrowser.class);
                     intent.putExtra("url",listParent.get(0).getFriend_requests_url());
                     startActivity(intent);
                 }
             }else {
+                MyApplication.isRefreshList = false;
 //                if (isClickRequest){
                     isRequest = true;
                     expListView.setVisibility(View.VISIBLE);
@@ -397,6 +400,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }else if (v == ivCalendar){
             isRequest = true;
             mExpandableListFriend.setVisibility(View.GONE);
+            MyApplication.isRefreshList = false;
             ivUsers.setBackgroundResource(R.drawable.ic_users);
             tvNoRequest.setVisibility(View.GONE);
             btnFriendMenu.setVisibility(View.GONE);
@@ -829,6 +833,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         expListView1.setVisibility(View.GONE);
                         isShowRequest = true;
                         isRequest = false;
+                        MyApplication.isRefreshList = true;
                         if (arrayParents.size()>0){
                             isClickRequest = true;
                             myCustomAdapter = new MyCustomAdapter(MainActivity.this, arrayParents);
@@ -846,6 +851,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         expListView.setVisibility(View.VISIBLE);
                         expListView1.setVisibility(View.GONE);
                         mExpandableListFriend.setVisibility(View.GONE);
+                        MyApplication.isRefreshList = false;
                         ivUsers.setBackgroundResource(R.drawable.ic_users);
                         if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
                             tv_friendReq.setText(""+us_Object1.getFriend_request_count());
@@ -864,11 +870,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         }else isClickRequest = false;
                     }
                 }else {
-                    MyApplication.isRefreshList = false;
+//                    MyApplication.isRefreshList = false;
                     if (arrayParents.size()>0){
                         isRequest = false;
                         isClickRequest = true;
                         isShowRequest = true;
+                        MyApplication.isRefreshList = true;
                         mExpandableListFriend.setVisibility(View.VISIBLE);
                         expListView.setVisibility(View.GONE);
                         expListView1.setVisibility(View.GONE);
@@ -890,12 +897,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             mExpandableListFriend.setVisibility(View.GONE);
                             expListView.setVisibility(View.GONE);
                             expListView1.setVisibility(View.GONE);
+                            MyApplication.isRefreshList = true;
                             isShowRequest = true;
                             isRequest = false;
                             isClickRequest = false;
                         }else {
                             isRequest = true;
                             isClickRequest = false;
+                            MyApplication.isRefreshList = false;
                             tvNoRequest.setVisibility(View.GONE);
                             btnFriendMenu.setVisibility(View.GONE);
                             expListView.setVisibility(View.VISIBLE);
