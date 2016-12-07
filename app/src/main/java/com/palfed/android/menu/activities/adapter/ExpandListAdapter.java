@@ -88,7 +88,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         CircularImageView imvAvatarTitle;
         RelativeLayout rlRestaurant;
         RelativeLayout rlMile;
-        LinearLayout rlParentGroup;
+        LinearLayout rlParentGroup, ll_group_left;
         RelativeLayout relativeLayout;
         LinearLayout ll_group2;
         LinearLayout ll_group1;
@@ -127,6 +127,7 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             holder.ll_group_main = (LinearLayout)convertView.findViewById(R.id.ll_group_main);
             holder.ll_icon_home = (LinearLayout)convertView.findViewById(R.id.ll_icon_home);
             holder.ll_right_parent = (LinearLayout)convertView.findViewById(R.id.ll_right_parent);
+            holder.ll_group_left = (LinearLayout)convertView.findViewById(R.id.ll_group_left);
             holder.space_width = (TextView) convertView.findViewById(R.id.space_width);
             holder.tvSp = (TextView) convertView.findViewById(R.id.tvSp);
             holder.line1 = (TextView) convertView.findViewById(R.id.line1);
@@ -431,35 +432,56 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
             holder.space_top1.setVisibility(View.INVISIBLE);
             holder.space_top.setVisibility(View.GONE);
         }
-        holder.ll_group_main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("url", childText.getUrl());
-                Intent intent = new Intent(_context,WebBrowser.class);
-                intent.putExtra("url",childText.getUrl());
-                _context.startActivity(intent);
-            }
-        });
 
-        holder.imvAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("url", childText.getUrl());
-                Intent intent = new Intent(_context,WebBrowser.class);
-                intent.putExtra("url",childText.getUrl());
-                _context.startActivity(intent);
-            }
-        });
-        holder.btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("url", childText.getUrl());
+        if (childText.getUrl()!= null){
+            holder.ll_group_main.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("url", childText.getUrl());
+                    Intent intent = new Intent(_context,WebBrowser.class);
+                    intent.putExtra("url",childText.getUrl());
+                    _context.startActivity(intent);
+                }
+            });
+            holder.ll_right_parent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("url", childText.getUrl());
+                    Intent intent = new Intent(_context,WebBrowser.class);
+                    intent.putExtra("url",childText.getUrl());
+                    _context.startActivity(intent);
+                }
+            });
+            holder.ll_group_left.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("url", childText.getUrl());
+                    Intent intent = new Intent(_context,WebBrowser.class);
+                    intent.putExtra("url",childText.getUrl());
+                    _context.startActivity(intent);
+                }
+            });
+            holder.imvAvatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("url", childText.getUrl());
+                    Intent intent = new Intent(_context,WebBrowser.class);
+                    intent.putExtra("url",childText.getUrl());
+                    _context.startActivity(intent);
+                }
+            });
+            holder.btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("url", childText.getUrl());
+                    Intent intent = new Intent(_context,WebBrowser.class);
+                    intent.putExtra("url",childText.getUrl());
+                    _context.startActivity(intent);
+                }
+            });
+        }
 
-                Intent intent = new Intent(_context,WebBrowser.class);
-                intent.putExtra("url",childText.getUrl());
-                _context.startActivity(intent);
-            }
-        });
+
         holder.btnFriendFinder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

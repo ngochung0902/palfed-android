@@ -55,7 +55,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -103,10 +105,11 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         QTSRun.setIsCheck(getApplicationContext(), true);
         final Intent intent = getIntent();
         url = intent.getStringExtra("url");
+//        String localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
         if (url.endsWith("?")||url.contains("?")) {
-            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
+            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
         } else {
-            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
+            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
 
         }
         Log.e("WebBrowser","Url:" +url);

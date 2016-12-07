@@ -46,7 +46,9 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -101,9 +103,9 @@ public class WebNotification extends Activity implements View.OnClickListener {
 //            url = intent.getStringExtra("url");
 //        }
         if (url.endsWith("?")) {
-            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
+            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
         } else {
-            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android";
+            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
 
         }
         QTSRun.setDestination(getApplicationContext(), "");

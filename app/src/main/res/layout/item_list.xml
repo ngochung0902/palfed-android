@@ -82,6 +82,7 @@
                     app:selector_stroke_color="#88FF8800"
                     app:selector_stroke_width="2dp" />
                 <LinearLayout
+                    android:id="@+id/ll_group_left"
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
