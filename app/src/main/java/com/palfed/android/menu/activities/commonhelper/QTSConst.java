@@ -46,5 +46,5 @@ public class QTSConst {
 //	public static String URL_REGISTRATION = "https://palfed.com/api/set-android-registration-id?registration_id";
 //	public static String URL_FORGOTTEN_PASSWORD = "https://www.palfed.com/login/forgotten-password";
 //	public static String URL_LOGINTOKEN = "https://www.palfed.com/api/get-login-token";
-//public static String URL_FRIEND_REQUEST = "https://palfed.com/api/friend-request-response";
+//	public static String URL_FRIEND_REQUEST = "https://palfed.com/api/friend-request-response";
 }

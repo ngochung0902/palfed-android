@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -91,22 +92,18 @@ public class WebNotification extends Activity implements View.OnClickListener {
         webBrowser = (WebView) findViewById(R.id.wen_browser);
         ivClose.setEnabled(false);
         QTSRun.setIsCheck(getApplicationContext(), true);
-//        if (QTSRun.Getweb(getApplicationContext())) {
-//            QTSRun.Setweb(getApplicationContext(), false);
             if (QTSRun.getDestination(getApplicationContext()).toString().trim().length() != 0) {
                 url = QTSRun.getDestination(getApplicationContext()).toString().trim();
             }else{
                 finish();
             }
-//        } else {
-//            Intent intent = getIntent();
-//            url = intent.getStringExtra("url");
-//        }
+        TimeZone tz = TimeZone.getDefault();
+        String timezone_name = tz.getDisplayName(false, TimeZone.SHORT);
+        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
         if (url.endsWith("?")) {
-            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
+            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
         } else {
-            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
-
+            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
         }
         QTSRun.setDestination(getApplicationContext(), "");
         QTSRun.setBadge(getApplicationContext(),0);

@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -105,12 +106,13 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         QTSRun.setIsCheck(getApplicationContext(), true);
         final Intent intent = getIntent();
         url = intent.getStringExtra("url");
-//        String localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
+        TimeZone tz = TimeZone.getDefault();
+        String timezone_name = tz.getDisplayName(false, TimeZone.SHORT);
+        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
         if (url.endsWith("?")||url.contains("?")) {
-            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
+            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
         } else {
-            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString();
-
+            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
         }
         Log.e("WebBrowser","Url:" +url);
         QTSRun.setFontTV(getApplicationContext(), lbTitle, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
