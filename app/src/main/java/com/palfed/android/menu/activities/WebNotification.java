@@ -99,7 +99,8 @@ public class WebNotification extends Activity implements View.OnClickListener {
             }
         TimeZone tz = TimeZone.getDefault();
         String timezone_name = tz.getDisplayName(false, TimeZone.SHORT);
-        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
+//        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
+        String timezone_name_long = tz.getID();
         if (url.endsWith("?")) {
             url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
         } else {
