@@ -90,6 +90,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     boolean isTickCal = false;
     boolean isRequest = true;
     boolean isClickRequest = false;
+    boolean is_reload = false;
 
     private ImageLoaderAvar _imageLoader;
     private String longitude="";
@@ -98,7 +99,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private GPSTracker gps;
     MyReceiver myReceiver;
     IntentFilter intentFilter;
-    private ProgressDialog pDialog;
+
     UserObject us_Object1;
 
 
@@ -457,9 +458,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
     public class AddRequests extends AsyncTask<String, Void, String> {
         JSONParser jsonParser_rq = new JSONParser();
         JSONObject json_rq = null;
+        ProgressDialog pDialog_request;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            pDialog_request = new ProgressDialog(MainActivity.this);
+            pDialog_request.setMessage("Loading...");
+            pDialog_request.show();
+            pDialog_request.setCancelable(false);
         }
 
         @Override
@@ -484,6 +490,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if (pDialog_request != null)
+                pDialog_request.cancel();
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
                 isTickCal = false;
                 isShowRequest = false;
@@ -491,7 +499,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
                 MyApplication.isRefreshList = true;
-                new GetData().execute();
+                if (!is_reload)
+                    new GetData().execute();
             }else{
                 QTSRun.showToast(getApplicationContext(),"Network is disconnected");
             }
@@ -502,10 +511,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
         String login_token = "";
         String token = QTSRun.getToken(getApplicationContext());
         String secret = QTSRun.getSecret(getApplicationContext());
+        ProgressDialog pDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Refreshing menu...");
             pDialog.show();
@@ -514,6 +525,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             QTSRun.setNotifMsg(getApplicationContext(),false);
             isTickCal = false;
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
+            is_reload = true;
         }
 
         @Override
@@ -783,8 +795,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            pDialog.cancel();
-
+            if (pDialog != null)
+                pDialog.cancel();
             if (s.equalsIgnoreCase("Success")) {
 //                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
                 QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object1.getFriend_request_count()));
@@ -793,6 +805,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
                 _imageLoader.DisplayImage(us_Object1.getProfile_pic_url(), ivAvatar);
                 ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(us_Object1.getNotification_count()));
+                is_reload = false;
                 if (Integer.parseInt(us_Object1.getNotification_count())>0){
                     tv_Notif.setText(""+us_Object1.getNotification_count());
                     tv_Notif.setVisibility(View.VISIBLE);
@@ -1102,7 +1115,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 QTSRun.setDestination(context,url);
             }
             if (QTSRun.getIsOpenApp(context)) {
-                new GetData().execute();
+                if (!is_reload)
+                    new GetData().execute();
             }
         }
 
