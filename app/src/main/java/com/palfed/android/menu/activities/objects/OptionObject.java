@@ -3,6 +3,8 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,34 +12,63 @@ import java.util.List;
  * Created by Android QTS on 1/5/2016.
  */
 public class OptionObject implements Parcelable {
+    @SerializedName("title")
     String title;
+    @SerializedName("description")
     String description;
+    @SerializedName("name")
     String name;
+    @SerializedName("profile_pic_url")
     String profile_pic_url;
+    @SerializedName("ready_date")
     String ready_date;
+    @SerializedName("ready_time")
     String ready_time;
+    @SerializedName("ready_timestamp")
     String ready_timestamp;
+    @SerializedName("ready_timestamp_tz_offset")
     String ready_timestamp_tz_offset;
+    @SerializedName("from_now_text")
     String from_now_text;
+    @SerializedName("url")
     String url;
+    @SerializedName("i_am_making_this")
     String i_am_making_this;
+    @SerializedName("distance")
     String distance;
+    @SerializedName("distance_unit")
     String distance_unit;
+    @SerializedName("lat_long")
     String lat_long;
+    @SerializedName("title")
     String can_join;
+    @SerializedName("bring_container")
     String bring_container;
+    @SerializedName("eating_out")
     String eating_out;
+    @SerializedName("available_portions")
     String available_portions;
+    @SerializedName("eating")
     String eating;
+    @SerializedName("portions_im_eating")
     String portions_im_eating;
+    @SerializedName("notify_text")
     String notify_text;
+    @SerializedName("menu_type")
     String menu_type;
+    @SerializedName("comments")
     String comments;
+    @SerializedName("mutual_friend_text")
     String mutual_friend_text;
+    @SerializedName("mutual_friend_html")
     String mutual_friend_html;
+    @SerializedName("restaurant")
     String restaurant;
+    @SerializedName("restaurant_profile_pic_url")
     String restaurant_profile_pic_url;
+    @SerializedName("food_image_url")
     String food_image_url;
+    @SerializedName("tags")
     List<TagsObject> tags;
 
     public void setTags(List<TagsObject> tags) {

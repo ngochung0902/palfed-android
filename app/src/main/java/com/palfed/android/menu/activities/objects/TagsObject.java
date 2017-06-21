@@ -3,13 +3,18 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Administrator on 11/24/2016.
  */
 
 public class TagsObject implements Parcelable {
+    @SerializedName("tag")
     String tag;
+    @SerializedName("type")
     String type;
+//    @SerializedName("mcolor")
     int mcolor;
 
     public void setMcolor(int mcolor) {

@@ -3,12 +3,17 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Android QTS on 1/5/2016.
  */
 public class UserObject implements Parcelable{
+    @SerializedName("friend_request_count")
     String friend_request_count;
+    @SerializedName("notification_count")
     String notification_count;
+    @SerializedName("profile_pic_url")
     String profile_pic_url;
 
     public void setFriend_request_count(String friend_request_count) {

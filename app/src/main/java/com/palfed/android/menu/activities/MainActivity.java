@@ -27,6 +27,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.palfed.android.menu.activities.customviews.CircularImageView;
 import com.palfed.android.menu.activities.objects.FrRequestObj;
 import com.palfed.android.menu.activities.objects.FriendObjParent;
@@ -220,12 +222,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
             }else{
+                tv_friendReq.setVisibility(View.INVISIBLE);
+                tv_Notif.setVisibility(View.INVISIBLE);
                 QTSRun.showToast(getApplicationContext(),"Network is disconnected");
-                QTSRun.setIsRegister(getApplicationContext(), false);
-                Intent intent = new Intent(this,
-                        LoginActivity.class);
-                startActivity(intent);
-                finish();
+//                QTSRun.setIsRegister(getApplicationContext(), false);
+//                Intent intent = new Intent(this,
+//                        LoginActivity.class);
+//                startActivity(intent);
+//                finish();
             }
         }else{
             QTSRun.setNotifMsg(getApplicationContext(),false);
@@ -327,20 +331,26 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if (v == ivHome){
-            Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-            intent.putExtra("url",listParent.get(0).getBase_url());
-            startActivity(intent);
-        }else if (v == ivAvatar){
-            Log.e("my account",listParent.get(0).getBase_url());
+            if (listParent.size() > 0){
                 Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                intent.putExtra("url", listParent.get(0).getBase_url().toString() +"account");
+                intent.putExtra("url",listParent.get(0).getBase_url());
                 startActivity(intent);
+            }
+        }else if (v == ivAvatar){
+            if (listParent.size() > 0) {
+                Log.e("my account", listParent.get(0).getBase_url());
+                Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                intent.putExtra("url", listParent.get(0).getBase_url().toString() + "account");
+                startActivity(intent);
+            }
         }else if (v == ivNotifications){
-            Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-            intent.putExtra("url",listParent.get(0).getNotifications_url());
-            startActivity(intent);
+            if (listParent.size() > 0) {
+                Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                intent.putExtra("url", listParent.get(0).getNotifications_url());
+                startActivity(intent);
 //            tv_Notif.setVisibility(View.INVISIBLE);
-            boolean success = ShortcutBadger.removeCount(MainActivity.this);
+                ShortcutBadger.removeCount(MainActivity.this);
+            }
         }else if (v == btnFriendMenu){
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
             isTickCal = false;
@@ -375,10 +385,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                     tv_friendReq.setVisibility(View.GONE);
                 }else {
-                    MyApplication.isRefreshList = false;
-                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                    intent.putExtra("url",listParent.get(0).getFriend_requests_url());
-                    startActivity(intent);
+                    if (listParent.size() > 0){
+                        MyApplication.isRefreshList = false;
+                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
+                        intent.putExtra("url",listParent.get(0).getFriend_requests_url());
+                        startActivity(intent);
+                    }
                 }
             }else {
                 MyApplication.isRefreshList = false;
@@ -407,7 +419,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
             btnFriendMenu.setVisibility(View.GONE);
             if (QTSRun.getFr_request(getApplicationContext())>0){
                 tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
-                tv_friendReq.setVisibility(View.VISIBLE);
+                if (QTSRun.isNetworkAvailable(getApplicationContext()))
+                    if (listParent.size() > 0)
+                        tv_friendReq.setVisibility(View.VISIBLE);
             }else{
                 tv_friendReq.setVisibility(View.INVISIBLE);
             }
@@ -506,6 +520,29 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }
     }
+//    private void getDataMenu(){
+//        Ion.with(getApplicationContext())
+//                .load("POST", QTSConst.URL_LOGIN)
+//                .setBodyParameter("token_hash", QTSRun.getTokenhash(getApplicationContext()))
+//                .setBodyParameter("longitude", longitude)
+//                .setBodyParameter("latitude", latitude)
+//                .setBodyParameter("localtime", localtime)
+//                .setBodyParameter("timezone", QTSRun.getTimezone(getApplicationContext()))
+//                .asString()
+//                .setCallback(new FutureCallback<String>() {
+//                    @Override
+//                    public void onCompleted(Exception e, String result) {
+//                        if (e == null){
+//                            try {
+//                                json = new JSONObject(result);
+//
+//                            } catch (JSONException e1) {
+//                                e1.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//    }
     public class GetData extends AsyncTask<String, Void, String> {
         String token_hash="";
         String login_token = "";
@@ -1115,8 +1152,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 QTSRun.setDestination(context,url);
             }
             if (QTSRun.getIsOpenApp(context)) {
-                if (!is_reload)
+                if (!is_reload) {
                     new GetData().execute();
+                }
             }
         }
 

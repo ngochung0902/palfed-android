@@ -3,6 +3,8 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +12,53 @@ import java.util.List;
  * Created by Android QTS on 1/5/2016.
  */
 public class ParentObject implements Parcelable {
+    @SerializedName("status")
     String status;
+    @SerializedName("base_url")
     String base_url;
+    @SerializedName("notifications_url")
     String notifications_url;
+    @SerializedName("friend_requests_url")
     String friend_requests_url;
+    @SerializedName("secret")
     String secret;
+    @SerializedName("token")
     String token;
+    @SerializedName("login_token")
     String login_token;
+    @SerializedName("menu")
     List<MenuObject> menuObjectArrayList;
+    @SerializedName("user")
+    UserObject user;
+    @SerializedName("friend_suggestions")
+    List<FrRequestObj> friend_suggestions;
+    @SerializedName("friend_requests")
+    List<FriendObjParent> friend_requests;
 
-//    UserObject _userObjects ;
+    public void setFriend_suggestions(List<FrRequestObj> friend_suggestions) {
+        this.friend_suggestions = friend_suggestions;
+    }
+
+    public List<FriendObjParent> getFriend_requests() {
+        return friend_requests;
+    }
+
+    public void setFriend_requests(List<FriendObjParent> friend_requests) {
+        this.friend_requests = friend_requests;
+    }
+
+    public List<FrRequestObj> getFriend_suggestions() {
+        return friend_suggestions;
+    }
+
+    public UserObject getUser() {
+        return user;
+    }
+
+    public void setUser(UserObject user) {
+        this.user = user;
+    }
+    //    UserObject _userObjects ;
 
     public void setMenuObjectArrayList(List<MenuObject> menuObjectArrayList) {
         this.menuObjectArrayList = menuObjectArrayList;

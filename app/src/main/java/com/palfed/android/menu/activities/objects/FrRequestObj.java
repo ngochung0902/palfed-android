@@ -3,6 +3,8 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -10,11 +12,17 @@ import java.util.List;
  */
 
 public class FrRequestObj implements Parcelable{
+    @SerializedName("name")
     String name;
+    @SerializedName("picture")
     String picture_url;
+    @SerializedName("fr_id")
     String fr_id;
+    @SerializedName("guid")
     String guid;
+    @SerializedName("request_html")
     String request_html;
+
 //    int isRequest;
 
 

@@ -3,6 +3,8 @@ package com.palfed.android.menu.activities.objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,13 +12,23 @@ import java.util.List;
  * Created by Android QTS on 1/5/2016.
  */
 public class MenuObject implements Parcelable {
+    @SerializedName("ts")
     String ts;
+    @SerializedName("day")
     String day;
+    @SerializedName("ymd")
     String ymd;
+    @SerializedName("day_no_timezone")
+    String day_no_timezone;
+    @SerializedName("day_no_year")
     String day_no_year;
+    @SerializedName("day_name")
     String day_name;
+    @SerializedName("message_text")
     String message_text;
+    @SerializedName("message_html")
     String message_html;
+    @SerializedName("options")
     List<OptionObject> optionObjectArrayList;
 
     public void setOptionObjectArrayList(List<OptionObject> optionObjectArrayList) {
