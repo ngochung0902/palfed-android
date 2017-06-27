@@ -19,7 +19,7 @@ import java.util.TimerTask;
 public class TimeService extends Service {
 
     // constant
-    public static final long NOTIFY_INTERVAL = 2* 60 *1000; // 25 min
+    public static final long NOTIFY_INTERVAL = 25* 60 *1000; // 25 min
 
     // run on another Thread to avoid crash
     private Handler mHandler = new Handler();

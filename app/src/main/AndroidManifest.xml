@@ -67,6 +67,11 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name=".activities.NoInternetAct"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".activities.ForgottenPass"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:screenOrientation="portrait">

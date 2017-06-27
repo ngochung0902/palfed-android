@@ -40,6 +40,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -130,7 +132,18 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         webBrowser.getSettings().setAppCacheEnabled(true);
 //        webBrowser.loadUrl("https://design.palfed.com/upload-test");
         webBrowser.loadUrl(url);
-        new GetLoginToken().execute();
+
+        if (QTSRun.isNetworkAvailable(getApplicationContext()))
+            getLogintoken();
+//            new GetLoginToken().execute();
+        else {
+//            QTSRun.showToast(getApplicationContext(), "Network is disconnected");
+            ivClose.setEnabled(true);
+            isLoading = true;
+            Intent in = new Intent(WebBrowser.this,
+                    NoInternetAct.class);
+            startActivity(in);
+        }
 
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,48 +199,77 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         }
     }
 
-    class GetLoginToken extends AsyncTask<String, Void, String> {
-        String login_token = "";
-        String token = "";
+//    class GetLoginToken extends AsyncTask<String, Void, String> {
+//        String login_token = "";
+//        String token = "";
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... strings) {
+//            String status = "";
+//            HashMap<String, String> params = new HashMap<>();
+//            params.put("token_hash", QTSRun.getTokenhash(getApplicationContext()));
+//            try {
+//                json = jsonParser.makeHttpRequest(QTSConst.URL_LOGINTOKEN, "POST", params);
+//                if (json != null) {
+//                    Log.e("setLocation", json.toString());
+//                    status = json.getString("status");
+//                    if (status.equalsIgnoreCase("Success")) {
+//                        login_token = json.getString("login_token");
+//                        token = json.getString("token");
+//                    }
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            return status;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//            if (s.equalsIgnoreCase("Success")) {
+//                QTSRun.SetLogin_token(getApplicationContext(), login_token);
+//                QTSRun.setToken(getApplicationContext(), token);
+//                QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + token));
+//                Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + token));
+//                ivClose.setEnabled(true);
+//            }
+//            isLoading = true;
+//        }
+//    }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String status = "";
-            HashMap<String, String> params = new HashMap<>();
-            params.put("token_hash", QTSRun.getTokenhash(getApplicationContext()));
-            try {
-                json = jsonParser.makeHttpRequest(QTSConst.URL_LOGINTOKEN, "POST", params);
-                if (json != null) {
-                    Log.e("setLocation", json.toString());
-                    status = json.getString("status");
-                    if (status.equalsIgnoreCase("Success")) {
-                        login_token = json.getString("login_token");
-                        token = json.getString("token");
+    private void getLogintoken(){
+        Ion.with(getApplicationContext())
+                .load("POST", QTSConst.URL_LOGINTOKEN)
+                .setBodyParameter("token_hash", QTSRun.getTokenhash(getApplicationContext()))
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+                        if (e == null){
+                            try {
+                                json =  new JSONObject(result);
+                                Log.e("setLocation", json.toString());
+                                if (json.getString("status").equalsIgnoreCase("Success")) {
+                                    QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                    QTSRun.setToken(getApplicationContext(), json.getString("token"));
+                                    QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                    Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                    ivClose.setEnabled(true);
+                                }
+                                isLoading = true;
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
                     }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return status;
-        }
+                });
 
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (s.equalsIgnoreCase("Success")) {
-                QTSRun.SetLogin_token(getApplicationContext(), login_token);
-                QTSRun.setToken(getApplicationContext(), token);
-                QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + token));
-                Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + token));
-                ivClose.setEnabled(true);
-            }
-            isLoading = true;
-        }
     }
 
     /// create MD5 //////////////

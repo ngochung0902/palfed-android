@@ -224,11 +224,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }else{
                 tv_friendReq.setVisibility(View.INVISIBLE);
                 tv_Notif.setVisibility(View.INVISIBLE);
-                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
+//                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
 //                QTSRun.setIsRegister(getApplicationContext(), false);
-//                Intent intent = new Intent(this,
-//                        LoginActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
+                startActivity(intent);
 //                finish();
             }
         }else{
@@ -307,20 +307,31 @@ public class MainActivity extends Activity implements View.OnClickListener{
             expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    Log.e("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
-                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                    intent.putExtra("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
-                    startActivity(intent);
+                    if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                        Log.e("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
+                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
+                        intent.putExtra("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
+                        startActivity(intent);
+                    }else {
+                        Intent intent = new Intent(MainActivity.this,NoInternetAct.class);
+                        startActivity(intent);
+                    }
                     return false;
                 }
             });
             expListView1.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    Log.e("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
-                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                    intent.putExtra("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
-                    startActivity(intent);
+                    if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                        Log.e("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
+                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
+                        intent.putExtra("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
+                        startActivity(intent);
+                    }else {
+                        Intent intent = new Intent(MainActivity.this,NoInternetAct.class);
+                        startActivity(intent);
+                    }
+
                     return false;
                 }
             });
@@ -331,26 +342,49 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if (v == ivHome){
-            if (listParent.size() > 0){
-                Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                intent.putExtra("url",listParent.get(0).getBase_url());
+            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                if (listParent.size() > 0){
+                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
+                    intent.putExtra("url",listParent.get(0).getBase_url());
+                    startActivity(intent);
+                }
+            }else {
+//                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
                 startActivity(intent);
             }
+
         }else if (v == ivAvatar){
-            if (listParent.size() > 0) {
-                Log.e("my account", listParent.get(0).getBase_url());
-                Intent intent = new Intent(MainActivity.this, WebBrowser.class);
-                intent.putExtra("url", listParent.get(0).getBase_url().toString() + "account");
+            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                if (listParent.size() > 0) {
+                    Log.e("my account", listParent.get(0).getBase_url());
+                    Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                    intent.putExtra("url", listParent.get(0).getBase_url().toString() + "account");
+                    startActivity(intent);
+                }
+            }else {
+//                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
                 startActivity(intent);
             }
+
         }else if (v == ivNotifications){
-            if (listParent.size() > 0) {
-                Intent intent = new Intent(MainActivity.this, WebBrowser.class);
-                intent.putExtra("url", listParent.get(0).getNotifications_url());
+            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                if (listParent.size() > 0) {
+                    Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                    intent.putExtra("url", listParent.get(0).getNotifications_url());
+                    startActivity(intent);
+                    ShortcutBadger.removeCount(MainActivity.this);
+                }
+            }else {
+//                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
                 startActivity(intent);
-//            tv_Notif.setVisibility(View.INVISIBLE);
-                ShortcutBadger.removeCount(MainActivity.this);
             }
+
         }else if (v == btnFriendMenu){
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
             isTickCal = false;
@@ -419,9 +453,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
             btnFriendMenu.setVisibility(View.GONE);
             if (QTSRun.getFr_request(getApplicationContext())>0){
                 tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
-                if (QTSRun.isNetworkAvailable(getApplicationContext()))
+                if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                     if (listParent.size() > 0)
                         tv_friendReq.setVisibility(View.VISIBLE);
+                }else {
+                    Intent intent = new Intent(MainActivity.this,
+                            NoInternetAct.class);
+                    startActivity(intent);
+                }
             }else{
                 tv_friendReq.setVisibility(View.INVISIBLE);
             }
@@ -516,7 +555,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 if (!is_reload)
                     new GetData().execute();
             }else{
-                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
+//                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
+                startActivity(intent);
             }
         }
     }
@@ -1034,7 +1076,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
             }else{
-                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
+//                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
+                startActivity(intent);
             }
         }else{
             QTSRun.setIsCheck(getApplicationContext(),false);

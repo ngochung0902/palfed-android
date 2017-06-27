@@ -204,6 +204,10 @@ public class LoginActivity extends Activity {
                 super.onFailure(ex);
             }
         });
+        if (!QTSRun.isNetworkAvailable(getApplicationContext())) {
+            Intent intent = new Intent(LoginActivity.this,NoInternetAct.class);
+            startActivity(intent);
+        }
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -220,8 +224,10 @@ public class LoginActivity extends Activity {
                             Log.e("LoginActivity", "localtime:" + localtime);
                             if (QTSRun.isNetworkAvailable(getApplicationContext()))
                                 getData();
-                            else QTSRun.showToast(getApplicationContext(), "Network is disconnect.");
-//                            new GetData().execute();
+                            else {
+                                Intent intent = new Intent(LoginActivity.this,NoInternetAct.class);
+                                startActivity(intent);
+                            }
                         } else {
                             QTSRun.showToast(getApplicationContext(), "Password is required");
                         }
@@ -236,9 +242,16 @@ public class LoginActivity extends Activity {
         tvForgotPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
-                intent.putExtra("url_load", QTSConst.URL_FORGOTTEN_PASSWORD);
-                startActivity(intent);
+                if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                    Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
+                    intent.putExtra("url_load", QTSConst.URL_FORGOTTEN_PASSWORD);
+                    startActivity(intent);
+                }else {
+                    Intent in = new Intent(LoginActivity.this,
+                            NoInternetAct.class);
+                    startActivity(in);
+                }
+
             }
         });
         // Add code to print out the key hash
@@ -268,9 +281,16 @@ public class LoginActivity extends Activity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
-                intent.putExtra("url_load", "https://www.palfed.com/register?device=android");
-                startActivity(intent);
+                if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                    Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
+                    intent.putExtra("url_load", "https://www.palfed.com/register?device=android");
+                    startActivity(intent);
+                }else {
+                    Intent in = new Intent(LoginActivity.this,
+                            NoInternetAct.class);
+                    startActivity(in);
+                }
+
             }
         });
     }

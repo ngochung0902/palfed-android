@@ -36,7 +36,7 @@ public class PushNotificationService extends GcmListenerService {
             int badgeCount = Integer.parseInt(data.getString("badge"));
             int request_Count = Integer.parseInt(data.getString("friend_requests"));
             QTSRun.setNotifMsg(getApplicationContext(),true);
-            boolean success = ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+//            boolean success = ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
             QTSRun.setBadge(getApplicationContext(), badgeCount);
             QTSRun.setFr_request(getApplicationContext(), request_Count);
             if (data.toString().contains("click_destination")) {
