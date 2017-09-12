@@ -1,11 +1,11 @@
 package com.palfed.android.menu.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.palfed.android.menu.R;
@@ -22,6 +22,8 @@ public class NoInternetAct extends Activity {
         setContentView(R.layout.nonetwork_activity);
         TextView lbNetwork = (TextView) findViewById(R.id.lbNoNetwork);
         ImageButton btRefresh = (ImageButton) findViewById(R.id.ibtRefresh);
+        ImageView ic_logo = (ImageView) findViewById(R.id.ic_logo);
+        QTSRun.setLayoutView(ic_logo, QTSRun.GetWidthDevice(getApplicationContext()) * 2 / 3, QTSRun.GetWidthDevice(getApplicationContext()) * 2 / 3 * 106 / 190);
         QTSRun.setFontTV(getApplicationContext(), lbNetwork, QTSConst.FONT_ROBOTOSLAB_REGULAR);
         btRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
