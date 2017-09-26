@@ -4,79 +4,82 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.Service;
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Parcelable;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.palfed.android.menu.R;
+import com.palfed.android.menu.activities.adapter.AdapterLvNavMenu;
+import com.palfed.android.menu.activities.commonhelper.JSONParser;
 import com.palfed.android.menu.activities.commonhelper.QTSConst;
 import com.palfed.android.menu.activities.commonhelper.QTSRun;
-import com.palfed.android.menu.R;
-import com.palfed.android.menu.activities.commonhelper.JSONParser;
+import com.palfed.android.menu.activities.objects.LVNav;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.os.Build.*;
+import static android.os.Build.VERSION;
+import static android.os.Build.VERSION_CODES;
 
 /**
  * Created by Android QTS on 1/6/2016.
  */
 public class WebBrowser extends Activity implements View.OnClickListener {
-    private ImageView ivClose, btnPre, btnNext, btnRefresh, btnX;
+
+    private AdapterLvNavMenu adt;
+    private CountDownTimer cd;
+    private LinearLayout lnlv;
+    private Animation animslide_left, animslide_right;
+    private boolean ismenushow=true;
+    private ListView lv_navmenu;
+    private ImageView ivClose, btnPre, btnNext, btnRefresh, btnX,ic_navmenu;
     private TextView lbTitle;
     private WebView webBrowser;
-    private ProgressDialog progressBar;
-    private String url = "";
+
+    private String url = "",urlmenunav = "";
     JSONParser jsonParser = new JSONParser();
     JSONObject json = null;
     private ValueCallback<Uri> mUploadMessage;
@@ -97,6 +100,14 @@ public class WebBrowser extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.web_layout);
+        animslide_left = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.move_left);
+        animslide_right = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.move_right);
+        lnlv = (LinearLayout) findViewById(R.id.lnlv);
+        ic_navmenu = (ImageView) findViewById(R.id.ic_navmenu);
+        lv_navmenu = (ListView) findViewById(R.id.lv_navmenu);
+        addDrawerItems();
         lbTitle = (TextView) findViewById(R.id.lbTitle);
         ivClose = (ImageView) findViewById(R.id.ivClose);
         btnPre = (ImageView) findViewById(R.id.btnPre);
@@ -106,32 +117,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         webBrowser = (WebView) findViewById(R.id.wen_browser);
         ivClose.setEnabled(false);
         QTSRun.setIsCheck(getApplicationContext(), true);
-        final Intent intent = getIntent();
-        url = intent.getStringExtra("url");
-        TimeZone tz = TimeZone.getDefault();
-        String timezone_name = tz.getDisplayName(false, TimeZone.SHORT);
-//        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
-        String timezone_name_long = tz.getID();
-        if (url.endsWith("?")||url.contains("?")) {
-            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
-        } else {
-            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext())+"&login_device=Android&timezone="+QTSRun.getTimezone(getApplicationContext())+"&localtime="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString()+"&timezone_name="+timezone_name+"&timezone_long="+timezone_name_long;
-        }
-        Log.e("WebBrowser","Url:" +url);
-        QTSRun.setFontTV(getApplicationContext(), lbTitle, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
-        webBrowser.getSettings().setJavaScriptEnabled(true);
-        webBrowser.getSettings().setAllowFileAccess(true);
-        webBrowser.getSettings().setAllowContentAccess(true);
-        webBrowser.getSettings().setSupportZoom(true);
-        webBrowser.getSettings().setPluginState(WebSettings.PluginState.ON);
-        webBrowser.setWebViewClient(new WebViewClient());
-        webBrowser.getSettings().setJavaScriptEnabled(true);
-        webBrowser.getSettings().setAllowFileAccess(true);
-        webBrowser.addJavascriptInterface(new WebViewJavaScriptInterface(this), "Android");
-
-        webBrowser.getSettings().setAppCacheEnabled(true);
-//        webBrowser.loadUrl("https://design.palfed.com/upload-test");
-        webBrowser.loadUrl(url);
+        loadWebView();
 
         if (QTSRun.isNetworkAvailable(getApplicationContext()))
             getLogintoken();
@@ -145,17 +131,6 @@ public class WebBrowser extends Activity implements View.OnClickListener {
             startActivity(in);
         }
 
-        ivClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QTSRun.setIsService(getApplicationContext(), false);
-                Intent intent = new Intent(WebBrowser.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
-        });
         T = new Timer();
         T.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -178,7 +153,39 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         btnNext.setOnClickListener(this);
         btnRefresh.setOnClickListener(this);
         btnPre.setOnClickListener(this);
+        ic_navmenu.setOnClickListener(this);
+        ivClose.setOnClickListener(this);
 
+    }
+
+    private void loadWebView() {
+        final Intent intent = getIntent();
+        url = intent.getStringExtra("url");
+        TimeZone tz = TimeZone.getDefault();
+        String timezone_name = tz.getDisplayName(false, TimeZone.SHORT);
+        //        String timezone_name_long = tz.getDisplayName(false, TimeZone.LONG);
+        String timezone_name_long = tz.getID();
+        if (url.endsWith("?") || url.contains("?")) {
+            url = url + "&login=" + QTSRun.GetLogin_token(getApplicationContext()) + "&login_device=Android&timezone=" + QTSRun.getTimezone(getApplicationContext()) + "&localtime=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString() + "&timezone_name=" + timezone_name + "&timezone_long=" + timezone_name_long;
+        } else {
+            url = url + "?login=" + QTSRun.GetLogin_token(getApplicationContext()) + "&login_device=Android&timezone=" + QTSRun.getTimezone(getApplicationContext()) + "&localtime=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()).toString() + "&timezone_name=" + timezone_name + "&timezone_long=" + timezone_name_long;
+        }
+
+        Log.e("WebBrowser", "Url:" + url);
+        QTSRun.setFontTV(getApplicationContext(), lbTitle, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        webBrowser.getSettings().setJavaScriptEnabled(true);
+        webBrowser.getSettings().setAllowFileAccess(true);
+        webBrowser.getSettings().setAllowContentAccess(true);
+        webBrowser.getSettings().setSupportZoom(true);
+        webBrowser.getSettings().setPluginState(WebSettings.PluginState.ON);
+        webBrowser.setWebViewClient(new WebViewClient());
+        webBrowser.getSettings().setJavaScriptEnabled(true);
+        webBrowser.getSettings().setAllowFileAccess(true);
+        webBrowser.addJavascriptInterface(new WebViewJavaScriptInterface(this), "Android");
+
+        webBrowser.getSettings().setAppCacheEnabled(true);
+        //        webBrowser.loadUrl("https://design.palfed.com/upload-test");
+        webBrowser.loadUrl(url);
     }
 
     @Override
@@ -196,6 +203,38 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         } else if (v == btnX) {
             webBrowser.stopLoading();
             QTSRun.setIsService(getApplicationContext(),false);
+        }else if (v == ic_navmenu){
+            if (ismenushow) {
+
+                ismenushow=!ismenushow;
+                lnlv.setVisibility(View.VISIBLE);
+                lnlv.startAnimation(animslide_left);
+                lv_navmenu.setVisibility(View.VISIBLE);
+
+            }else{
+                ismenushow=!ismenushow;
+                lnlv.startAnimation(animslide_right);
+                cd=new CountDownTimer(200,100) {
+
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    @Override
+                    public void onFinish() {
+                        lv_navmenu.setVisibility(View.GONE);
+                        lnlv.setVisibility(View.GONE);
+                    }
+                };
+                cd.start();
+            }
+        }else if (v == ivClose){
+            Log.e("onlick","onclick");
+            QTSRun.setIsService(getApplicationContext(), false);
+            Intent intent = new Intent(WebBrowser.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -550,5 +589,99 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                     }
                 });
     }
+    private void addDrawerItems() {
+        adt = new AdapterLvNavMenu(WebBrowser.this,QTSConst.arr);
+        lv_navmenu.setAdapter(adt);
 
+        lv_navmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (QTSConst.arrList.get(position).getAction().toString().contains("app:")){
+                    Log.e("Chuc Nang",QTSConst.arrList.get(position).getAction().toString());
+                    if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:only-show-eating")){
+
+                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:logout")){
+                        ShowDialog();
+                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-menu"))
+                    {
+                        hideMenuNav();
+                    }
+                }else {
+                    Log.e("show item lv",QTSConst.arrList.get(position).getAction().toString());
+                    webBrowser.getSettings().setJavaScriptEnabled(true);
+                    webBrowser.getSettings().setAllowFileAccess(true);
+                    webBrowser.getSettings().setAllowContentAccess(true);
+                    webBrowser.getSettings().setSupportZoom(true);
+                    webBrowser.getSettings().setPluginState(WebSettings.PluginState.ON);
+                    webBrowser.setWebViewClient(new WebViewClient());
+                    webBrowser.getSettings().setJavaScriptEnabled(true);
+                    webBrowser.getSettings().setAllowFileAccess(true);
+                    webBrowser.addJavascriptInterface(new WebViewJavaScriptInterface(WebBrowser.this), "Android");
+                    webBrowser.getSettings().setAppCacheEnabled(true);
+                    //webBrowser.loadUrl("https://design.palfed.com/upload-test");
+                    webBrowser.loadUrl(QTSConst.arrList.get(position).getAction().toString());
+                    hideMenuNav();
+                }
+
+            }
+        });
+    }
+
+    private void hideMenuNav() {
+        if (ismenushow) {
+
+            ismenushow=!ismenushow;
+            lnlv.setVisibility(View.VISIBLE);
+            lnlv.startAnimation(animslide_left);
+            lv_navmenu.setVisibility(View.VISIBLE);
+
+        }else{
+            ismenushow=!ismenushow;
+            lnlv.startAnimation(animslide_right);
+            cd=new CountDownTimer(200,100) {
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+                }
+                @Override
+                public void onFinish() {
+                    lv_navmenu.setVisibility(View.GONE);
+                    lnlv.setVisibility(View.GONE);
+                }
+            };
+            cd.start();
+        }
+    }
+
+    public void ShowDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(WebBrowser.this);
+        builder.setTitle(getResources().getString(R.string.app_name));
+        builder.setMessage("Do you want to logout?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if (QTSRun.getIsFBLogin(getApplicationContext())){
+                            QTSRun.setIsFBLogin(getApplicationContext(),false);
+
+                            LoginManager.getInstance().logOut();
+                        }
+                        Intent intent = new Intent(WebBrowser.this,
+                                LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        QTSRun.setIsRegister(getApplicationContext(),false);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        return;
+                    }
+
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 }

@@ -10,6 +10,7 @@ android {
         targetSdkVersion 19
         versionCode 9
         versionName "1.8"
+
     }
     buildTypes {
         release {
@@ -33,6 +34,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.8.0'
     compile 'com.loopj.android:android-async-http:1.4.4'
     compile 'com.koushikdutta.ion:ion:2.+'
+//    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+//    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile project(':ShortcutBadger')
     //    compile 'com.hkm.taglib:tag:1.6.0'

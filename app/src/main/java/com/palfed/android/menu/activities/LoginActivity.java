@@ -40,7 +40,9 @@ import com.palfed.android.menu.activities.commonhelper.QTSRun;
 import com.palfed.android.menu.activities.gcm.GCMClientManager;
 import com.palfed.android.menu.activities.objects.FrRequestObj;
 import com.palfed.android.menu.activities.objects.FriendObjParent;
+import com.palfed.android.menu.activities.objects.LVNav;
 import com.palfed.android.menu.activities.objects.MenuObject;
+import com.palfed.android.menu.activities.objects.NavMenuObject;
 import com.palfed.android.menu.activities.objects.OptionObject;
 import com.palfed.android.menu.activities.objects.ParentObject;
 import com.palfed.android.menu.activities.objects.TagsObject;
@@ -323,6 +325,7 @@ public class LoginActivity extends Activity {
                         localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                 .format(Calendar.getInstance().getTime()).toString();
                         getData();
+
 //                        new GetData().execute();
 //                        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(),
 //                                new GraphRequest.GraphJSONObjectCallback() {
@@ -665,6 +668,7 @@ public class LoginActivity extends Activity {
                         }
                     }
                 });
+        getNavMenu();
     }
 
 //    class GetData extends AsyncTask<String, Void, String> {
@@ -1045,4 +1049,52 @@ public class LoginActivity extends Activity {
 //        // Logs 'app deactivate' App Event.
 //        AppEventsLogger.deactivateApp(this);
 //    }
+private void getNavMenu(){
+    Ion.with(LoginActivity.this)
+            .load(QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1")
+            .asJsonObject()
+            .setCallback(new FutureCallback<JsonObject>() {
+                @Override
+                public void onCompleted(Exception e, JsonObject result) {
+                    Log.e("error",QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1");
+                    if (e == null){
+                        try {
+                            json = new JSONObject(result.toString());
+                            if (json != null) {
+                                Log.e("Result", json.toString());
+                                if (json.getString("status").equalsIgnoreCase("Success")){
+                                    JSONArray jsonAddress = json.getJSONArray("nav");
+                                    Log.e("Nav Json array",jsonAddress.toString());
+                                    QTSConst.arrList = new ArrayList<NavMenuObject>();
+                                    NavMenuObject pr_Object = new NavMenuObject();
+                                    QTSRun.setToken(getApplicationContext(), json.getString("token"));
+                                    QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                    QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                    Log.e("tokenhash login", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                    for (int i=0;i<=jsonAddress.length();i++)
+                                    {
+                                        JSONObject navmenu = jsonAddress.getJSONObject(i);
+                                        pr_Object.setAction(navmenu.getString("action"));
+                                        pr_Object.setTitle(navmenu.getString("title"));
+                                        pr_Object.setId(i);
+                                        Log.e("Title",navmenu.getString("title").toString());
+                                        Log.e("Action",navmenu.getString("action").toString());
+                                        Log.e("Id",i+"");
+                                        QTSConst.arrList.add(new NavMenuObject(i,navmenu.getString("action"),navmenu.getString("title")));
+                                        QTSConst.arr.add(new LVNav(navmenu.getString("title")));
+                                    }
+
+                                }
+                                else {
+                                    Log.e("error","No Success");
+                                }
+                            }
+
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            });
+}
 }

@@ -1,6 +1,5 @@
 package com.palfed.android.menu.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -12,36 +11,47 @@ import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.palfed.android.menu.activities.customviews.CircularImageView;
-import com.palfed.android.menu.activities.objects.FrRequestObj;
-import com.palfed.android.menu.activities.objects.FriendObjParent;
-import com.palfed.android.menu.activities.objects.MenuObject;
-import com.palfed.android.menu.activities.objects.OptionObject;
-import com.palfed.android.menu.activities.objects.ParentObject;
 import com.palfed.android.menu.R;
+import com.palfed.android.menu.activities.adapter.AdapterLvNavMenu;
 import com.palfed.android.menu.activities.adapter.ExpandListAdapter;
 import com.palfed.android.menu.activities.commonhelper.GPSTracker;
 import com.palfed.android.menu.activities.commonhelper.ImageLoaderAvar;
 import com.palfed.android.menu.activities.commonhelper.JSONParser;
 import com.palfed.android.menu.activities.commonhelper.QTSConst;
 import com.palfed.android.menu.activities.commonhelper.QTSRun;
+import com.palfed.android.menu.activities.customviews.CircularImageView;
+import com.palfed.android.menu.activities.objects.FrRequestObj;
+import com.palfed.android.menu.activities.objects.FriendObjParent;
+import com.palfed.android.menu.activities.objects.LVNav;
+import com.palfed.android.menu.activities.objects.MenuObject;
+import com.palfed.android.menu.activities.objects.NavMenuObject;
+import com.palfed.android.menu.activities.objects.OptionObject;
+import com.palfed.android.menu.activities.objects.ParentObject;
 import com.palfed.android.menu.activities.objects.TagsObject;
 import com.palfed.android.menu.activities.objects.UserObject;
 
@@ -59,7 +69,17 @@ import java.util.List;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 
+
 public class MainActivity extends Activity implements View.OnClickListener{
+    private ArrayAdapter<String> mAdapter;
+    private AdapterLvNavMenu adt;
+    private ListView lv_navmenu;
+    private LinearLayout lnlv;
+    private RelativeLayout relative2;
+    private Animation animslide_left, animslide_right;
+    private boolean ismenushow=true;
+    private CountDownTimer cd;
+    private ImageView icnavmenu;
     private ImageView ivLogo, ivNotifications, ivUsers, ivCalendar, ivHome, ivLogout;
     private CircularImageView ivAvatar;
     TextView tvNoFound, tv_Notif, tv_friendReq, tvNoRequest;
@@ -109,6 +129,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+                                         //------------------------------------------------------
+        lnlv = (LinearLayout) findViewById(R.id.lnlv);
+        lv_navmenu = (ListView) findViewById(R.id.lv_navmenu);
+        relative2 = (RelativeLayout) findViewById(R.id.relative2);
+        addDrawerItems();
+        icnavmenu = (ImageView) findViewById(R.id.icnavmenu);
+        animslide_left = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.move_left);
+        animslide_right = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.move_right);
+
+
         gps = new GPSTracker(this);
         QTSRun.setIsOpenApp(getApplicationContext(),true);
         rl_Group1 = (LinearLayout) findViewById(R.id.rl_group1);
@@ -163,6 +195,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         QTSRun.setLayoutView(ivLogo, w/4,w/4*143/190);
         QTSRun.setLayoutView(mSwitch, w/4,w/4*143/190);
         QTSRun.setLayoutView(ivUsers, w/9,w/9);
+        QTSRun.setLayoutView(icnavmenu, w/9,w/9);
         QTSRun.setLayoutView(ivNotifications, w / 9, w / 9);
         QTSRun.setLayoutView(ivCalendar, w / 9, w / 9);
         QTSRun.setLayoutView(ivHome, w / 9, w / 9);
@@ -179,6 +212,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             latitude = "";
         }
 
+        icnavmenu.setOnClickListener(this);
         ivHome.setOnClickListener(this);
         ivLogout.setOnClickListener(this);
         ivNotifications.setOnClickListener(this);
@@ -341,6 +375,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        if (v==icnavmenu)
+        {
+            hideMenuNav();
+        }
         if (v == ivHome){
             if (QTSRun.isNetworkAvailable(getApplicationContext())){
                 if (listParent.size() > 0){
@@ -443,68 +481,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }else if (v == ivLogout){
             ShowDialog();
-
-        }else if (v == ivCalendar){
-            isRequest = true;
-            mExpandableListFriend.setVisibility(View.GONE);
-            MyApplication.isRefreshList = false;
-            ivUsers.setBackgroundResource(R.drawable.ic_users);
-            tvNoRequest.setVisibility(View.GONE);
-            btnFriendMenu.setVisibility(View.GONE);
-            if (QTSRun.getFr_request(getApplicationContext())>0){
-                tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
-                if (QTSRun.isNetworkAvailable(getApplicationContext())) {
-                    if (listParent.size() > 0)
-                        tv_friendReq.setVisibility(View.VISIBLE);
-                }else {
-                    Intent intent = new Intent(MainActivity.this,
-                            NoInternetAct.class);
-                    startActivity(intent);
-                }
-            }else{
-                tv_friendReq.setVisibility(View.INVISIBLE);
-            }
-                if (!isTickCal) {
-                    mExpandableListFriend.setVisibility(View.GONE);
-                    ivCalendar.setBackgroundResource(R.drawable.ic_calendar2);
-                    isTickCal = true;
-                    if (expListView1.getCount() > 0) {
-                        for (int i = 0; i < listMenu1.size(); i++) {
-                            expListView1.expandGroup(i);
-                        }
-                        tvNoFound.setVisibility(View.GONE);
-                        expListView1.setVisibility(View.VISIBLE);
-                        expListView.setVisibility(View.GONE);
-                    } else {
-                        tvNoFound.setVisibility(View.VISIBLE);
-                        expListView1.setVisibility(View.GONE);
-                        expListView.setVisibility(View.GONE);
-                    }
-                } else {
-                    isTickCal = false;
-                    ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
-
-                    expListView1.setVisibility(View.GONE);
-                    if (!isRequest) {
-                        mExpandableListFriend.setVisibility(View.VISIBLE);
-                        expListView.setVisibility(View.GONE);
-                    } else {
-                        expListView.setVisibility(View.VISIBLE);
-                        mExpandableListFriend.setVisibility(View.GONE);
-                    }
-                    if (expListView.getCount() > 0) {
-                        for (int i = 0; i < listMenu.size(); i++) {
-                            expListView.expandGroup(i);
-                        }
-                        expListView.setVisibility(View.VISIBLE);
-                        tvNoFound.setVisibility(View.GONE);
-                    } else {
-                        tvNoFound.setVisibility(View.VISIBLE);
-                        expListView1.setVisibility(View.GONE);
-                        expListView.setVisibility(View.GONE);
-                    }
-
-                }
         }
     }
 
@@ -617,6 +593,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
             params.put("latitude", latitude);
             params.put("localtime", localtime);
             params.put("timezone", QTSRun.getTimezone(getApplicationContext()));
+
+            Log.e("error",
+                    "token_hash"+QTSRun.getTokenhash(getApplicationContext()).toString()+"\n"+
+                            "longitude"+longitude.toString()+"\n"+
+                            "latitude"+latitude.toString()+"\n"+
+                            "localtime"+localtime.toString()+"\n"+
+                            "timezone"+QTSRun.getTimezone(getApplicationContext()).toString());
+
             try {
                 json = jsonParser.makeHttpRequest(QTSConst.URL_GET_MENU, "POST", params);
                 if (json != null) {
@@ -882,6 +866,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 QTSRun.setToken(getApplicationContext(), token);
                 QTSRun.setTokenhash(getApplicationContext(), md5(token_hash));
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
+                QTSConst.arr.clear();
+                getNavMenu();
                 _imageLoader.DisplayImage(us_Object1.getProfile_pic_url(), ivAvatar);
                 ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(us_Object1.getNotification_count()));
                 is_reload = false;
@@ -1087,6 +1073,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         super.onRestart();
     }
+//show dialog logout
      public void ShowDialog() {
      AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
      builder.setTitle(getResources().getString(R.string.app_name));
@@ -1106,6 +1093,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                      startActivity(intent);
                      QTSRun.setIsRegister(getApplicationContext(),false);
+                     QTSConst.arr.clear();
                      finish();
                  }
              })
@@ -1385,5 +1373,182 @@ public class MainActivity extends Activity implements View.OnClickListener{
             protected int groupPosition;
             protected Button button;
         }
+    }
+
+    private void getNavMenu(){
+        Log.e("addmang","add mang");
+        Ion.with(MainActivity.this)
+                .load(QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+
+                        Log.e("error",QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1");
+                        if (e == null){
+                            try {
+                                json = new JSONObject(result.toString());
+                                if (json != null) {
+                                    Log.e("Result", json.toString());
+                                    if (json.getString("status").equalsIgnoreCase("Success")){
+                                        JSONArray jsonAddress = json.getJSONArray("nav");
+                                        Log.e("Nav Json array",jsonAddress.toString());
+                                        QTSConst.arrList = new ArrayList<NavMenuObject>();
+                                        NavMenuObject pr_Object = new NavMenuObject();
+
+                                        QTSRun.setToken(getApplicationContext(), json.getString("token"));
+                                        QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                        QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                        Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                        for (int i=0;i<=jsonAddress.length();i++)
+                                        {
+                                            JSONObject navmenu = jsonAddress.getJSONObject(i);
+                                            pr_Object.setAction(navmenu.getString("action"));
+                                            pr_Object.setTitle(navmenu.getString("title"));
+                                            pr_Object.setId(i);
+                                            Log.e("Title",navmenu.getString("title").toString());
+                                            Log.e("Action",navmenu.getString("action").toString());
+                                            Log.e("Id",i+"");
+                                            QTSConst.arrList.add(new NavMenuObject(i,navmenu.getString("action"),navmenu.getString("title")));
+                                            QTSConst.arr.add(new LVNav(navmenu.getString("title")));
+                                        }
+
+                                    }
+                                    else {
+                                        Log.e("error","No Success");
+                                    }
+                                }
+
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+                });
+    }
+//add and onItemClick lv menu nav
+    private void addDrawerItems() {
+//        mAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,arr);
+//        lv_navmenu.setAdapter(mAdapter);
+        adt = new AdapterLvNavMenu(MainActivity.this,QTSConst.arr);
+        lv_navmenu.setAdapter(adt);
+
+        lv_navmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (QTSConst.arrList.get(position).getAction().toString().contains("app:")){
+                    if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:only-show-eating")){
+                        ivCalendar();
+                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:logout")){
+                        ShowDialog();
+                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-menu"))
+                    {
+                        hideMenuNav();
+                    }
+                    Log.e("Chuc Nang",QTSConst.arrList.get(position).getAction().toString());
+                }else {
+                    Log.e("show item lv",QTSConst.arrList.get(position).getAction().toString());
+                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
+                    intent.putExtra("url",QTSConst.arrList.get(position).getAction().toString());
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+//show item expanddable
+    private void ivCalendar(){
+        isRequest = true;
+        mExpandableListFriend.setVisibility(View.GONE);
+        MyApplication.isRefreshList = false;
+        ivUsers.setBackgroundResource(R.drawable.ic_users);
+        tvNoRequest.setVisibility(View.GONE);
+        btnFriendMenu.setVisibility(View.GONE);
+        if (QTSRun.getFr_request(getApplicationContext())>0){
+            tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
+                if (listParent.size() > 0)
+                    tv_friendReq.setVisibility(View.VISIBLE);
+            }else {
+                Intent intent = new Intent(MainActivity.this,
+                        NoInternetAct.class);
+                startActivity(intent);
+            }
+        }else{
+            tv_friendReq.setVisibility(View.INVISIBLE);
+        }
+        if (!isTickCal) {
+            mExpandableListFriend.setVisibility(View.GONE);
+            ivCalendar.setBackgroundResource(R.drawable.ic_calendar2);
+            isTickCal = true;
+            if (expListView1.getCount() > 0) {
+                for (int i = 0; i < listMenu1.size(); i++) {
+                    expListView1.expandGroup(i);
+                }
+                tvNoFound.setVisibility(View.GONE);
+                expListView1.setVisibility(View.VISIBLE);
+                expListView.setVisibility(View.GONE);
+            } else {
+                tvNoFound.setVisibility(View.VISIBLE);
+                expListView1.setVisibility(View.GONE);
+                expListView.setVisibility(View.GONE);
+            }
+        } else {
+            isTickCal = false;
+            ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
+
+            expListView1.setVisibility(View.GONE);
+            if (!isRequest) {
+                mExpandableListFriend.setVisibility(View.VISIBLE);
+                expListView.setVisibility(View.GONE);
+            } else {
+                expListView.setVisibility(View.VISIBLE);
+                mExpandableListFriend.setVisibility(View.GONE);
+            }
+            if (expListView.getCount() > 0) {
+                for (int i = 0; i < listMenu.size(); i++) {
+                    expListView.expandGroup(i);
+                }
+                expListView.setVisibility(View.VISIBLE);
+                tvNoFound.setVisibility(View.GONE);
+            } else {
+                tvNoFound.setVisibility(View.VISIBLE);
+                expListView1.setVisibility(View.GONE);
+                expListView.setVisibility(View.GONE);
+            }
+
+        }
+    }
+//hide listview menunav
+    private void hideMenuNav() {
+        if (ismenushow) {
+
+            ismenushow=!ismenushow;
+            lnlv.setVisibility(View.VISIBLE);
+            lnlv.startAnimation(animslide_left);
+            lv_navmenu.setVisibility(View.VISIBLE);
+
+        }else{
+            ismenushow=!ismenushow;
+            lnlv.startAnimation(animslide_right);
+            cd=new CountDownTimer(200,100) {
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+                }
+                @Override
+                public void onFinish() {
+                    lv_navmenu.setVisibility(View.GONE);
+                    lnlv.setVisibility(View.GONE);
+                }
+            };
+            cd.start();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        QTSConst.arr.clear();
     }
 }
