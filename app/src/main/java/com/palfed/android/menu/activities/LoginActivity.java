@@ -82,9 +82,9 @@ public class LoginActivity extends Activity {
     private EditText edEmail, edPassword;
     private String facebook_access_token = "";
     private int w, h;
-//    JSONParser jsonParser = new JSONParser();
+    //    JSONParser jsonParser = new JSONParser();
     JSONObject json = null;
-//    private ProgressDialog pDialog;
+    //    private ProgressDialog pDialog;
     private ProgressDialog mProgressDialog;
     private String email = "";
     private String password = "";
@@ -207,7 +207,7 @@ public class LoginActivity extends Activity {
             }
         });
         if (!QTSRun.isNetworkAvailable(getApplicationContext())) {
-            Intent intent = new Intent(LoginActivity.this,NoInternetAct.class);
+            Intent intent = new Intent(LoginActivity.this, NoInternetAct.class);
             startActivity(intent);
         }
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -227,7 +227,7 @@ public class LoginActivity extends Activity {
                             if (QTSRun.isNetworkAvailable(getApplicationContext()))
                                 getData();
                             else {
-                                Intent intent = new Intent(LoginActivity.this,NoInternetAct.class);
+                                Intent intent = new Intent(LoginActivity.this, NoInternetAct.class);
                                 startActivity(intent);
                             }
                         } else {
@@ -244,11 +244,11 @@ public class LoginActivity extends Activity {
         tvForgotPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                     Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
                     intent.putExtra("url_load", QTSConst.URL_FORGOTTEN_PASSWORD);
                     startActivity(intent);
-                }else {
+                } else {
                     Intent in = new Intent(LoginActivity.this,
                             NoInternetAct.class);
                     startActivity(in);
@@ -283,11 +283,11 @@ public class LoginActivity extends Activity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (QTSRun.isNetworkAvailable(getApplicationContext())){
+                if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                     Intent intent = new Intent(LoginActivity.this, ForgottenPass.class);
                     intent.putExtra("url_load", "https://www.palfed.com/register?device=android");
                     startActivity(intent);
-                }else {
+                } else {
                     Intent in = new Intent(LoginActivity.this,
                             NoInternetAct.class);
                     startActivity(in);
@@ -324,7 +324,9 @@ public class LoginActivity extends Activity {
                         password = "";
                         localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                 .format(Calendar.getInstance().getTime()).toString();
+
                         getData();
+
 
 //                        new GetData().execute();
 //                        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(),
@@ -424,6 +426,7 @@ public class LoginActivity extends Activity {
                                         QTSRun.setTokenhash(getApplicationContext(), md5(json.getString("secret") + json.getString("token")));
                                         QTSRun.setToken(getApplicationContext(), json.getString("token"));
                                         QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                        Log.e("tokenhash login",QTSRun.getTokenhash(getApplicationContext()).toString());
 //                                        login_token = json.getString("login_token");
 //                                        token = json.getString("token");
 //                                        token_hash = json.getString("secret") + json.getString("token");
@@ -662,8 +665,8 @@ public class LoginActivity extends Activity {
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
                             }
-                        }else {
-                            Log.e("LoginActivity", "Excaption:" +e.getMessage());
+                        } else {
+                            Log.e("LoginActivity", "Excaption:" + e.getMessage());
                             QTSRun.showToast(getApplicationContext(), "Cannot connect to server, please try later!");
                         }
                     }
@@ -1025,7 +1028,7 @@ public class LoginActivity extends Activity {
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.show();
-        }else {
+        } else {
             mProgressDialog.show();
         }
     }
@@ -1035,7 +1038,8 @@ public class LoginActivity extends Activity {
             mProgressDialog.hide();
         }
     }
-//    @Override
+
+    //    @Override
 //    protected void onResume() {
 //        super.onResume();
 //
@@ -1049,52 +1053,50 @@ public class LoginActivity extends Activity {
 //        // Logs 'app deactivate' App Event.
 //        AppEventsLogger.deactivateApp(this);
 //    }
-private void getNavMenu(){
-    Ion.with(LoginActivity.this)
-            .load(QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1")
-            .asJsonObject()
-            .setCallback(new FutureCallback<JsonObject>() {
-                @Override
-                public void onCompleted(Exception e, JsonObject result) {
-                    Log.e("error",QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1");
-                    if (e == null){
-                        try {
-                            json = new JSONObject(result.toString());
-                            if (json != null) {
-                                Log.e("Result", json.toString());
-                                if (json.getString("status").equalsIgnoreCase("Success")){
-                                    JSONArray jsonAddress = json.getJSONArray("nav");
-                                    Log.e("Nav Json array",jsonAddress.toString());
-                                    QTSConst.arrList = new ArrayList<NavMenuObject>();
-                                    NavMenuObject pr_Object = new NavMenuObject();
-                                    QTSRun.setToken(getApplicationContext(), json.getString("token"));
-                                    QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
-                                    QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
-                                    Log.e("tokenhash login", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
-                                    for (int i=0;i<=jsonAddress.length();i++)
-                                    {
-                                        JSONObject navmenu = jsonAddress.getJSONObject(i);
-                                        pr_Object.setAction(navmenu.getString("action"));
-                                        pr_Object.setTitle(navmenu.getString("title"));
-                                        pr_Object.setId(i);
-                                        Log.e("Title",navmenu.getString("title").toString());
-                                        Log.e("Action",navmenu.getString("action").toString());
-                                        Log.e("Id",i+"");
-                                        QTSConst.arrList.add(new NavMenuObject(i,navmenu.getString("action"),navmenu.getString("title")));
-                                        QTSConst.arr.add(new LVNav(navmenu.getString("title")));
+    private void getNavMenu() {
+        Ion.with(LoginActivity.this)
+                .load(QTSConst.URL_GET_MENU + "?token_hash=" + QTSRun.getTokenhash(getApplicationContext()) + "&get-nav=1")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.e("error", QTSConst.URL_GET_MENU + "?token_hash=" + QTSRun.getTokenhash(getApplicationContext()) + "&get-nav=1");
+                        if (e == null) {
+                            try {
+                                json = new JSONObject(result.toString());
+                                if (json != null) {
+                                    Log.e("Result", json.toString());
+                                    if (json.getString("status").equalsIgnoreCase("Success")) {
+                                        JSONArray jsonAddress = json.getJSONArray("nav");
+                                        Log.e("Nav Json array", jsonAddress.toString());
+                                        QTSConst.arrList = new ArrayList<NavMenuObject>();
+                                        NavMenuObject pr_Object = new NavMenuObject();
+                                        QTSRun.setToken(getApplicationContext(), json.getString("token"));
+                                        QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                        QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                        Log.e("tokenhash login", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                        for (int i = 0; i <= jsonAddress.length(); i++) {
+                                            JSONObject navmenu = jsonAddress.getJSONObject(i);
+                                            pr_Object.setAction(navmenu.getString("action"));
+                                            pr_Object.setTitle(navmenu.getString("title"));
+                                            Log.e("Title", navmenu.getString("title").toString());
+                                            Log.e("Action", navmenu.getString("action").toString());
+                                            Log.e("Id", i + "");
+                                            QTSConst.arrList.add(new NavMenuObject(navmenu.getString("action"), navmenu.getString("title")));
+                                            QTSConst.arr.add(new LVNav(navmenu.getString("title")));
+                                        }
+
+                                    } else {
+                                        Log.e("error", "No Success");
                                     }
+                                }
 
-                                }
-                                else {
-                                    Log.e("error","No Success");
-                                }
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
                             }
-
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
                         }
                     }
-                }
-            });
-}
+                });
+        Log.e("addmang", "login add");
+    }
 }

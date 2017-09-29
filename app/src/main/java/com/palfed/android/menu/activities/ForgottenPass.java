@@ -30,7 +30,7 @@ import com.palfed.android.menu.R;
  * Created by Android QTS on 1/6/2016.
  */
 public class ForgottenPass extends Activity implements View.OnClickListener{
-    private ImageView  ivClose, btnPre,  btnNext, btnRefresh, btnX;
+    private ImageView  ivClose, btnPre,  btnNext, btnRefresh, btnX, ic_navmenu;
     private TextView lbTitle;
     private WebView webBrowser;
     private ProgressDialog progressBar;
@@ -42,6 +42,9 @@ public class ForgottenPass extends Activity implements View.OnClickListener{
         setContentView(R.layout.web_layout);
 
         url_load = getIntent().getStringExtra("url_load");
+        ic_navmenu = (ImageView) findViewById(R.id.ic_navmenu);
+
+        ic_navmenu.setVisibility(View.GONE);
 
         lbTitle = (TextView)findViewById(R.id.lbTitle);
         ivClose = (ImageView)findViewById(R.id.ivClose);

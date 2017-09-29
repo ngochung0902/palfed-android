@@ -23,11 +23,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -70,15 +72,13 @@ import java.util.List;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 
-public class MainActivity extends Activity implements View.OnClickListener{
-    private ArrayAdapter<String> mAdapter;
+public class MainActivity extends Activity implements View.OnClickListener {
+    private boolean ischeckimage = true;
     private AdapterLvNavMenu adt;
     private ListView lv_navmenu;
     private LinearLayout lnlv;
-    private RelativeLayout relative2;
     private Animation animslide_left, animslide_right;
-    private boolean ismenushow=true;
-    private CountDownTimer cd;
+    private boolean ismenushow = true;
     private ImageView icnavmenu;
     private ImageView ivLogo, ivNotifications, ivUsers, ivCalendar, ivHome, ivLogout;
     private CircularImageView ivAvatar;
@@ -100,7 +100,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     HashMap<MenuObject, List<OptionObject>> listChild;
     List<OptionObject> listOptions1 = null;
     List<ParentObject> listParent1 = null;
-    List <MenuObject> listMenu1 = null;
+    List<MenuObject> listMenu1 = null;
     HashMap<MenuObject, List<OptionObject>> listChild1 = null;
 
     private ExpandableListView mExpandableListFriend;
@@ -115,8 +115,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
     boolean is_reload = false;
 
     private ImageLoaderAvar _imageLoader;
-    private String longitude="";
-    private String latitude="";
+    private String longitude = "";
+    private String latitude = "";
 
     private GPSTracker gps;
     MyReceiver myReceiver;
@@ -129,10 +129,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-                                         //------------------------------------------------------
+        //------------------------------------------------------
         lnlv = (LinearLayout) findViewById(R.id.lnlv);
         lv_navmenu = (ListView) findViewById(R.id.lv_navmenu);
-        relative2 = (RelativeLayout) findViewById(R.id.relative2);
         addDrawerItems();
         icnavmenu = (ImageView) findViewById(R.id.icnavmenu);
         animslide_left = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -142,7 +141,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 
         gps = new GPSTracker(this);
-        QTSRun.setIsOpenApp(getApplicationContext(),true);
+        QTSRun.setIsOpenApp(getApplicationContext(), true);
         rl_Group1 = (LinearLayout) findViewById(R.id.rl_group1);
         rl_Group2 = (LinearLayout) findViewById(R.id.rl_group2);
         ivLogo = (ImageView) findViewById(R.id.ivLogo);
@@ -165,17 +164,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
         mExpandableListFriend = (ExpandableListView) findViewById(R.id.lvExpFooter);
         mExpandableListFriend.setGroupIndicator(null);
 
-        Log.e("number baged", QTSRun.getBadge(getApplication())+"");
-        if (QTSRun.getBadge(getApplicationContext())>0){
-            tv_Notif.setText(""+QTSRun.getBadge(getApplicationContext()));
+        Log.e("number baged", QTSRun.getBadge(getApplication()) + "");
+        if (QTSRun.getBadge(getApplicationContext()) > 0) {
+            tv_Notif.setText("" + QTSRun.getBadge(getApplicationContext()));
             tv_Notif.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             tv_Notif.setVisibility(View.INVISIBLE);
         }
-        if (QTSRun.getFr_request(getApplicationContext())>0){
-            tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+        if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+            tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
             tv_friendReq.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             tv_friendReq.setVisibility(View.INVISIBLE);
         }
 //keep reference to Activity context
@@ -187,28 +186,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         w = QTSRun.GetWidthDevice(getApplicationContext());
         h = QTSRun.GetHeightDevice(getApplicationContext());
 
-        QTSRun.setFontTV(getApplicationContext(),tv_Notif,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
-        QTSRun.setFontTV(getApplicationContext(),tv_friendReq,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
-        QTSRun.setFontTV(getApplicationContext(),tvNoRequest,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setFontTV(getApplicationContext(), tv_Notif, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setFontTV(getApplicationContext(), tv_friendReq, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setFontTV(getApplicationContext(), tvNoRequest, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
         QTSRun.setFontTV(getApplicationContext(), tvNoFound, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
-        QTSRun.setFontButton(getApplicationContext(),btnFriendMenu,QTSConst.FONT_ARBUTUSSLAB_REGULAR);
-        QTSRun.setLayoutView(ivLogo, w/4,w/4*143/190);
-        QTSRun.setLayoutView(mSwitch, w/4,w/4*143/190);
-        QTSRun.setLayoutView(ivUsers, w/9,w/9);
-        QTSRun.setLayoutView(icnavmenu, w/9,w/9);
+        QTSRun.setFontButton(getApplicationContext(), btnFriendMenu, QTSConst.FONT_ARBUTUSSLAB_REGULAR);
+        QTSRun.setLayoutView(ivLogo, w / 4, w / 4 * 143 / 190);
+        QTSRun.setLayoutView(mSwitch, w / 4, w / 4 * 143 / 190);
+        QTSRun.setLayoutView(ivUsers, w / 9, w / 9);
+        QTSRun.setLayoutView(icnavmenu, w / 9, w / 9);
         QTSRun.setLayoutView(ivNotifications, w / 9, w / 9);
         QTSRun.setLayoutView(ivCalendar, w / 9, w / 9);
         QTSRun.setLayoutView(ivHome, w / 9, w / 9);
         QTSRun.setLayoutView(ivAvatar, w / 9, w / 9);
         QTSRun.setLayoutView(ivLogout, w / 9, w / 9);
-        QTSRun.setLayoutView(btnFriendMenu,(int)(w/3),(int)getResources().getDimension(R.dimen.margin30));
+        QTSRun.setLayoutView(btnFriendMenu, (int) (w / 3), (int) getResources().getDimension(R.dimen.margin30));
 
-        if(gps.canGetLocation() ){
+        if (gps.canGetLocation()) {
             gps.getLocation();
-            longitude = gps.getLongitude()+"";
-            latitude = gps.getLatitude()+"";
-        }else{
-            longitude ="";
+            longitude = gps.getLongitude() + "";
+            latitude = gps.getLatitude() + "";
+        } else {
+            longitude = "";
             latitude = "";
         }
 
@@ -245,17 +244,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
         listParent = new ArrayList<ParentObject>();
         listParent1 = new ArrayList<ParentObject>();
         listMenu1 = new ArrayList<MenuObject>();
-        listChild1 = new HashMap<MenuObject,List<OptionObject>>();
-        Log.e("token_hash1",QTSRun.getTokenhash(getApplicationContext()));
+        listChild1 = new HashMap<MenuObject, List<OptionObject>>();
+        Log.e("token_hash1", QTSRun.getTokenhash(getApplicationContext()));
 
-        if (QTSRun.getIsRegister(getApplicationContext())){
+        if (QTSRun.getIsRegister(getApplicationContext())) {
             Log.e("token_hash Main1", QTSRun.getTokenhash(getApplicationContext()));
 
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
-            }else{
+            } else {
                 tv_friendReq.setVisibility(View.INVISIBLE);
                 tv_Notif.setVisibility(View.INVISIBLE);
 //                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
@@ -265,21 +264,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 startActivity(intent);
 //                finish();
             }
-        }else{
-            QTSRun.setNotifMsg(getApplicationContext(),false);
-            QTSRun.setIsRegister(getApplicationContext(),true);
+        } else {
+            QTSRun.setNotifMsg(getApplicationContext(), false);
+            QTSRun.setIsRegister(getApplicationContext(), true);
             Bundle bundle = getIntent().getExtras();
             UserObject usersss = getIntent().getExtras().getParcelable("user_object");
-            if(usersss != null){
-                _imageLoader.DisplayImage(usersss.getProfile_pic_url(),ivAvatar);
-                Log.e("image url",usersss.getProfile_pic_url().toString());
+            if (usersss != null) {
+                getNavMenu();
+                _imageLoader.DisplayImage(usersss.getProfile_pic_url(), ivAvatar);
+                Log.e("image url", usersss.getProfile_pic_url().toString());
             }
             listParent = bundle.getParcelableArrayList("data_arr");
             listParent1 = bundle.getParcelableArrayList("data_arr1");
             arrayParents = bundle.getParcelableArrayList("data_friend");
             listMenu = new ArrayList<MenuObject>();
-            listChild = new HashMap<MenuObject,List<OptionObject>>();
-            if (arrayParents.size()>0){
+            listChild = new HashMap<MenuObject, List<OptionObject>>();
+            if (arrayParents.size() > 0) {
                 isRequest = false;
                 mExpandableListFriend.setVisibility(View.VISIBLE);
                 expListView.setVisibility(View.GONE);
@@ -294,27 +294,27 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //                    setListViewHeight(mExpandableListFriend,i);
                     mExpandableListFriend.expandGroup(i);
                 }
-            }else {
+            } else {
                 isRequest = true;
                 expListView.setVisibility(View.VISIBLE);
                 expListView1.setVisibility(View.GONE);
                 mExpandableListFriend.setVisibility(View.GONE);
                 ivUsers.setBackgroundResource(R.drawable.ic_users);
                 isClickRequest = false;
-                if (QTSRun.getFr_request(getApplicationContext())>0){
-                    tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+                if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+                    tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
                     tv_friendReq.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     tv_friendReq.setVisibility(View.INVISIBLE);
                 }
             }
-            if (listParent.size() > 0){
+            if (listParent.size() > 0) {
                 Log.e("token_hash Main", QTSRun.getTokenhash(getApplicationContext()));
                 listMenu = (ArrayList<MenuObject>) listParent.get(0).getMenuObjectArrayList();
-                for (int ix = 0; ix <listMenu.size(); ix ++){
+                for (int ix = 0; ix < listMenu.size(); ix++) {
                     listOptions = new ArrayList<OptionObject>();
                     listOptions = listMenu.get(ix).getOptionObjectArrayList();
-                    listChild.put(listMenu.get(ix),listOptions);
+                    listChild.put(listMenu.get(ix), listOptions);
                 }
                 listAdapter = new ExpandListAdapter(MainActivity.this,
                         listMenu, listChild);
@@ -324,14 +324,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     expListView.expandGroup(i);
                 }
             }
-            if (listParent1.size() > 0){
+            if (listParent1.size() > 0) {
 
                 listMenu1 = (ArrayList<MenuObject>) listParent1.get(0).getMenuObjectArrayList();
-                for (int ix = 0; ix <listMenu1.size(); ix ++){
+                for (int ix = 0; ix < listMenu1.size(); ix++) {
                     listOptions1 = new ArrayList<OptionObject>();
                     listOptions1 = listMenu1.get(ix).getOptionObjectArrayList();
 //                    if (listOptions1.size()>0)
-                        listChild1.put(listMenu1.get(ix),listOptions1);
+                    listChild1.put(listMenu1.get(ix), listOptions1);
                 }
                 listAdapter1 = new ExpandListAdapter(MainActivity.this,
                         listMenu1, listChild1);
@@ -341,13 +341,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
             expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    if (QTSRun.isNetworkAvailable(getApplicationContext())){
-                        Log.e("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
-                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                        intent.putExtra("url",listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
+                    if (QTSRun.isNetworkAvailable(getApplicationContext())) {
+                        Log.e("url", listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
+                        Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                        intent.putExtra("url", listChild.get(listMenu.get(groupPosition)).get(childPosition).getUrl());
                         startActivity(intent);
-                    }else {
-                        Intent intent = new Intent(MainActivity.this,NoInternetAct.class);
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, NoInternetAct.class);
                         startActivity(intent);
                     }
                     return false;
@@ -356,13 +356,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
             expListView1.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                    if (QTSRun.isNetworkAvailable(getApplicationContext())){
-                        Log.e("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
-                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                        intent.putExtra("url",listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
+                    if (QTSRun.isNetworkAvailable(getApplicationContext())) {
+                        Log.e("url", listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
+                        Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                        intent.putExtra("url", listChild1.get(listMenu1.get(groupPosition)).get(childPosition).getUrl());
                         startActivity(intent);
-                    }else {
-                        Intent intent = new Intent(MainActivity.this,NoInternetAct.class);
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, NoInternetAct.class);
                         startActivity(intent);
                     }
 
@@ -375,55 +375,55 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if (v==icnavmenu)
-        {
+        if (v == icnavmenu) {
+            Log.e("onclick","onclick");
             hideMenuNav();
         }
-        if (v == ivHome){
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
-                if (listParent.size() > 0){
-                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                    intent.putExtra("url",listParent.get(0).getBase_url());
+        if (v == ivHome) {
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
+                if (listParent.size() > 0) {
+                    Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                    intent.putExtra("url", listParent.get(0).getBase_url());
                     startActivity(intent);
                 }
-            }else {
+            } else {
 //                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
                 startActivity(intent);
             }
 
-        }else if (v == ivAvatar){
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+        } else if (v == ivAvatar) {
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 if (listParent.size() > 0) {
                     Log.e("my account", listParent.get(0).getBase_url());
                     Intent intent = new Intent(MainActivity.this, WebBrowser.class);
                     intent.putExtra("url", listParent.get(0).getBase_url().toString() + "account");
                     startActivity(intent);
                 }
-            }else {
+            } else {
 //                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
                 startActivity(intent);
             }
 
-        }else if (v == ivNotifications){
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+        } else if (v == ivNotifications) {
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 if (listParent.size() > 0) {
                     Intent intent = new Intent(MainActivity.this, WebBrowser.class);
                     intent.putExtra("url", listParent.get(0).getNotifications_url());
                     startActivity(intent);
                     ShortcutBadger.removeCount(MainActivity.this);
                 }
-            }else {
+            } else {
 //                QTSRun.showToast(getApplicationContext(), "Network is disconnected.");
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
                 startActivity(intent);
             }
 
-        }else if (v == btnFriendMenu){
+        } else if (v == btnFriendMenu) {
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
             isTickCal = false;
             tvNoFound.setVisibility(View.GONE);
@@ -435,20 +435,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
             expListView1.setVisibility(View.GONE);
             mExpandableListFriend.setVisibility(View.GONE);
             ivUsers.setBackgroundResource(R.drawable.ic_users);
-            if (QTSRun.getFr_request(getApplicationContext())>0){
-                tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+            if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+                tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
                 tv_friendReq.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 tv_friendReq.setVisibility(View.INVISIBLE);
             }
-        }else if (v == ivUsers){
+        } else if (v == ivUsers) {
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
             isTickCal = false;
             tvNoFound.setVisibility(View.GONE);
             tvNoRequest.setVisibility(View.GONE);
             btnFriendMenu.setVisibility(View.GONE);
-            if (isRequest){
-                if (isClickRequest){
+            if (isRequest) {
+                if (isClickRequest) {
                     isRequest = false;
                     MyApplication.isRefreshList = true;
                     expListView.setVisibility(View.GONE);
@@ -456,30 +456,30 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     mExpandableListFriend.setVisibility(View.VISIBLE);
                     ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                     tv_friendReq.setVisibility(View.GONE);
-                }else {
-                    if (listParent.size() > 0){
+                } else {
+                    if (listParent.size() > 0) {
                         MyApplication.isRefreshList = false;
-                        Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                        intent.putExtra("url",listParent.get(0).getFriend_requests_url());
+                        Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                        intent.putExtra("url", listParent.get(0).getFriend_requests_url());
                         startActivity(intent);
                     }
                 }
-            }else {
+            } else {
                 MyApplication.isRefreshList = false;
 //                if (isClickRequest){
-                    isRequest = true;
-                    expListView.setVisibility(View.VISIBLE);
-                    expListView1.setVisibility(View.GONE);
-                    mExpandableListFriend.setVisibility(View.GONE);
-                    ivUsers.setBackgroundResource(R.drawable.ic_users);
-                    if (QTSRun.getFr_request(getApplicationContext())>0){
-                        tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
-                        tv_friendReq.setVisibility(View.VISIBLE);
-                    }else{
-                        tv_friendReq.setVisibility(View.INVISIBLE);
-                    }
+                isRequest = true;
+                expListView.setVisibility(View.VISIBLE);
+                expListView1.setVisibility(View.GONE);
+                mExpandableListFriend.setVisibility(View.GONE);
+                ivUsers.setBackgroundResource(R.drawable.ic_users);
+                if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+                    tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
+                    tv_friendReq.setVisibility(View.VISIBLE);
+                } else {
+                    tv_friendReq.setVisibility(View.INVISIBLE);
+                }
             }
-        }else if (v == ivLogout){
+        } else if (v == ivLogout) {
             ShowDialog();
         }
     }
@@ -488,6 +488,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         JSONParser jsonParser_rq = new JSONParser();
         JSONObject json_rq = null;
         ProgressDialog pDialog_request;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -521,7 +522,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             super.onPostExecute(s);
             if (pDialog_request != null)
                 pDialog_request.cancel();
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 isTickCal = false;
                 isShowRequest = false;
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
@@ -530,7 +531,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 MyApplication.isRefreshList = true;
                 if (!is_reload)
                     new GetData().execute();
-            }else{
+            } else {
 //                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
@@ -538,7 +539,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }
     }
-//    private void getDataMenu(){
+
+    //    private void getDataMenu(){
 //        Ion.with(getApplicationContext())
 //                .load("POST", QTSConst.URL_LOGIN)
 //                .setBodyParameter("token_hash", QTSRun.getTokenhash(getApplicationContext()))
@@ -562,7 +564,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //                });
 //    }
     public class GetData extends AsyncTask<String, Void, String> {
-        String token_hash="";
+        String token_hash = "";
         String login_token = "";
         String token = QTSRun.getToken(getApplicationContext());
         String secret = QTSRun.getSecret(getApplicationContext());
@@ -577,7 +579,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             pDialog.show();
             pDialog.setCancelable(false);
             tv_Notif.setVisibility(View.INVISIBLE);
-            QTSRun.setNotifMsg(getApplicationContext(),false);
+            QTSRun.setNotifMsg(getApplicationContext(), false);
             isTickCal = false;
             ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
             is_reload = true;
@@ -595,11 +597,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
             params.put("timezone", QTSRun.getTimezone(getApplicationContext()));
 
             Log.e("error",
-                    "token_hash"+QTSRun.getTokenhash(getApplicationContext()).toString()+"\n"+
-                            "longitude"+longitude.toString()+"\n"+
-                            "latitude"+latitude.toString()+"\n"+
-                            "localtime"+localtime.toString()+"\n"+
-                            "timezone"+QTSRun.getTimezone(getApplicationContext()).toString());
+                    "token_hash" + QTSRun.getTokenhash(getApplicationContext()).toString() + "\n" +
+                            "longitude" + longitude.toString() + "\n" +
+                            "latitude" + latitude.toString() + "\n" +
+                            "localtime" + localtime.toString() + "\n" +
+                            "timezone" + QTSRun.getTimezone(getApplicationContext()).toString());
 
             try {
                 json = jsonParser.makeHttpRequest(QTSConst.URL_GET_MENU, "POST", params);
@@ -609,7 +611,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
                     if (status.equalsIgnoreCase("Success")) {
                         listParent = new ArrayList<ParentObject>();
-                        if (arrayParents != null){
+                        if (arrayParents != null) {
                             arrayParents.clear();
                             arrayParents = null;
                         }
@@ -631,13 +633,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         pr_Object1.setToken(json.getString("token"));
                         pr_Object1.setLogin_token(json.getString("login_token"));
                         login_token = json.getString("login_token");
-                        token_hash = secret+json.getString("token");
+                        token_hash = secret + json.getString("token");
                         token = json.getString("token");
                         JSONArray arr_menu = json.getJSONArray("menu");
 
-                        if (json.toString().contains("friend_requests")){
+                        if (json.toString().contains("friend_requests")) {
                             JSONArray arr_parents = json.getJSONArray("friend_requests");
-                            if (arr_parents.length() > 0){
+                            if (arr_parents.length() > 0) {
                                 FriendObjParent parentObj_Fr = new FriendObjParent();
                                 parentObj_Fr.setmTitle("Friend Requests");
                                 parentObj_Fr.setIsRequest(1);
@@ -658,9 +660,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
                                 arrayParents.add(parentObj_Fr);
                             }
                         }
-                        if (json.toString().contains("friend_suggestions")){
+                        if (json.toString().contains("friend_suggestions")) {
                             JSONArray arr_parents = json.getJSONArray("friend_suggestions");
-                            if (arr_parents.length() > 0){
+                            if (arr_parents.length() > 0) {
                                 FriendObjParent parentObj_Fr = new FriendObjParent();
                                 parentObj_Fr.setmTitle("Friend Suggestions");
                                 parentObj_Fr.setIsRequest(0);
@@ -682,11 +684,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             }
                         }
                         listMenu = new ArrayList<MenuObject>();
-                        listChild = new HashMap<MenuObject,List<OptionObject>>();
+                        listChild = new HashMap<MenuObject, List<OptionObject>>();
                         listMenu1 = new ArrayList<MenuObject>();
-                        listChild1 = new HashMap<MenuObject,List<OptionObject>>();
-                        int i1 =0;
-                        for (int i= 0; i <arr_menu.length(); i ++){
+                        listChild1 = new HashMap<MenuObject, List<OptionObject>>();
+                        int i1 = 0;
+                        for (int i = 0; i < arr_menu.length(); i++) {
                             JSONObject item_menu = arr_menu.getJSONObject(i);
                             MenuObject mn_Object = new MenuObject();
                             MenuObject mn_Object1 = new MenuObject();
@@ -698,10 +700,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             mn_Object1.setDay(item_menu.getString("day"));
                             mn_Object1.setDay_no_year(item_menu.getString("day_no_year"));
                             mn_Object1.setYmd(item_menu.getString("ymd"));
-                            if (item_menu.toString().contains("day_name")){
+                            if (item_menu.toString().contains("day_name")) {
                                 mn_Object.setDay_name(item_menu.getString("day_name") + "");
                                 mn_Object1.setDay_name(item_menu.getString("day_name") + "");
-                            }else {
+                            } else {
                                 mn_Object.setDay_name("");
                                 mn_Object1.setDay_name("");
                             }
@@ -709,131 +711,131 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             JSONArray arr_options = item_menu.getJSONArray("options");
                             listOptions = new ArrayList<OptionObject>();
                             listOptions1 = new ArrayList<OptionObject>();
-                            for (int j = 0 ; j< arr_options.length(); j++){
+                            for (int j = 0; j < arr_options.length(); j++) {
                                 JSONObject item_options = arr_options.getJSONObject(j);
                                 OptionObject op_object = new OptionObject();
                                 op_object.setTitle(item_options.getString("title"));
                                 op_object.setDescription(item_options.getString("description"));
                                 op_object.setMenu_type(item_options.getString("menu_type") + "");
-                                if (item_options.toString().contains("tags")){
+                                if (item_options.toString().contains("tags")) {
                                     JSONArray arr_tags = item_options.getJSONArray("tags");
-                                    ArrayList<TagsObject> arrTags_list =  new ArrayList<TagsObject>();
-                                    for (int x =0; x<arr_tags.length();x++){
+                                    ArrayList<TagsObject> arrTags_list = new ArrayList<TagsObject>();
+                                    for (int x = 0; x < arr_tags.length(); x++) {
                                         TagsObject objTag = new TagsObject();
                                         objTag.setTag(arr_tags.getJSONObject(x).getString("tag"));
                                         objTag.setType(arr_tags.getJSONObject(x).getString("type"));
-                                        if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("feature")){
+                                        if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("feature")) {
                                             objTag.setMcolor(getResources().getColor(R.color.feature));
-                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("warning")){
+                                        } else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("warning")) {
                                             objTag.setMcolor(getResources().getColor(R.color.warning));
-                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("general")){
+                                        } else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("general")) {
                                             objTag.setMcolor(getResources().getColor(R.color.general));
-                                        }else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("pending")){
+                                        } else if (arr_tags.getJSONObject(x).getString("type").equalsIgnoreCase("pending")) {
                                             objTag.setMcolor(getResources().getColor(R.color.pending));
                                         }
                                         arrTags_list.add(objTag);
                                     }
                                     op_object.setTags(arrTags_list);
                                 }
-                                if (item_options.toString().contains("name")){
+                                if (item_options.toString().contains("name")) {
                                     op_object.setName(item_options.getString("name"));
                                 }
-                                if (item_options.toString().contains("profile_pic_url")){
+                                if (item_options.toString().contains("profile_pic_url")) {
                                     op_object.setProfile_pic_url(item_options.getString("profile_pic_url"));
                                 }
-                                if (item_options.toString().contains("url")){
+                                if (item_options.toString().contains("url")) {
                                     op_object.setUrl(item_options.getString("url") + "");
                                 }
-                                if (item_options.toString().contains("food_image_url")){
+                                if (item_options.toString().contains("food_image_url")) {
                                     op_object.setFood_image_url(item_options.getString("food_image_url") + "");
-                                }else{
+                                } else {
                                     op_object.setFood_image_url("");
                                 }
-                                if (item_options.toString().contains("ready_date")){
+                                if (item_options.toString().contains("ready_date")) {
                                     op_object.setReady_date(item_options.getString("ready_date") + "");
                                 }
-                                if (item_options.toString().contains("ready_time")){
+                                if (item_options.toString().contains("ready_time")) {
                                     op_object.setReady_time(item_options.getString("ready_time") + "");
                                 }
-                                if (item_options.toString().contains("ready_timestamp")){
+                                if (item_options.toString().contains("ready_timestamp")) {
                                     op_object.setReady_timestamp(item_options.getString("ready_timestamp") + "");
                                 }
-                                if (item_options.toString().contains("ready_timestamp_tz_offset")){
+                                if (item_options.toString().contains("ready_timestamp_tz_offset")) {
                                     op_object.setReady_timestamp_tz_offset(item_options.getString("ready_timestamp_tz_offset") + "");
                                 }
-                                if (item_options.toString().contains("lat_long")){
+                                if (item_options.toString().contains("lat_long")) {
                                     op_object.setLat_long(item_options.getString("lat_long") + "");
                                 }
-                                if (item_options.toString().contains("distance")){
+                                if (item_options.toString().contains("distance")) {
                                     op_object.setDistance(item_options.getString("distance") + "");
                                 }
-                                if(item_options.toString().contains("distance_unit")){
+                                if (item_options.toString().contains("distance_unit")) {
                                     op_object.setDistance_unit(item_options.getString("distance_unit") + "");
                                 }
-                                if (item_options.toString().contains("from_now_text")){
+                                if (item_options.toString().contains("from_now_text")) {
                                     op_object.setFrom_now_text(item_options.getString("from_now_text") + "");
                                 }
-                                if (item_options.toString().contains("i_am_making_this")){
+                                if (item_options.toString().contains("i_am_making_this")) {
                                     op_object.setI_am_making_this(item_options.getString("i_am_making_this") + "");
                                 }
-                                if (item_options.toString().contains("can_join")){
+                                if (item_options.toString().contains("can_join")) {
                                     op_object.setCan_join(item_options.getString("can_join") + "");
-                                }else{
+                                } else {
                                     op_object.setCan_join("");
                                 }
-                                if (item_options.toString().contains("bring_container")){
+                                if (item_options.toString().contains("bring_container")) {
                                     op_object.setBring_container(item_options.getString("bring_container") + "");
                                 }
-                                if (item_options.toString().contains("eating")){
+                                if (item_options.toString().contains("eating")) {
                                     op_object.setEating(item_options.getString("eating") + "");
                                 }
-                                if (item_options.toString().contains("eating_out")){
+                                if (item_options.toString().contains("eating_out")) {
                                     op_object.setEating_out(item_options.getString("eating_out") + "");
                                 }
-                                if (item_options.toString().contains("available_portions")){
+                                if (item_options.toString().contains("available_portions")) {
                                     op_object.setAvailable_portions(item_options.getString("available_portions") + "");
                                 }
-                                if (item_options.toString().contains("portions_im_eating")){
+                                if (item_options.toString().contains("portions_im_eating")) {
                                     op_object.setPortions_im_eating(item_options.getString("portions_im_eating") + "");
                                 }
-                                if (item_options.toString().contains("notify_text")){
+                                if (item_options.toString().contains("notify_text")) {
                                     op_object.setNotify_text(item_options.getString("notify_text") + "");
-                                }else{
+                                } else {
                                     op_object.setNotify_text("");
                                 }
-                                if (item_options.toString().contains("mutual_friend_text")){
+                                if (item_options.toString().contains("mutual_friend_text")) {
                                     op_object.setMutual_friend_text(item_options.getString("mutual_friend_text") + "");
 
                                 }
-                                if (item_options.toString().contains("mutual_friend_html")){
+                                if (item_options.toString().contains("mutual_friend_html")) {
                                     op_object.setMutual_friend_html(item_options.getString("mutual_friend_html") + "");
                                 }
-                                if (item_options.toString().contains("restaurant")){
+                                if (item_options.toString().contains("restaurant")) {
                                     op_object.setRestaurant(item_options.getString("restaurant"));
                                 }
-                                if (item_options.toString().contains("restaurant_profile_pic_url")){
+                                if (item_options.toString().contains("restaurant_profile_pic_url")) {
                                     op_object.setRestaurant_profile_pic_url(item_options.getString("restaurant_profile_pic_url"));
                                 }
 
-                                if (item_options.toString().contains("comments")){
-                                    if (item_options.getString("comments").toString().length() > 0){
+                                if (item_options.toString().contains("comments")) {
+                                    if (item_options.getString("comments").toString().length() > 0) {
                                         op_object.setComments(item_options.getString("comments"));
-                                    }else{
+                                    } else {
                                         op_object.setComments("0");
                                     }
                                 }
                                 listOptions.add(op_object);
-                                if (op_object.getNotify_text().length()>0 ){
+                                if (op_object.getNotify_text().length() > 0) {
                                     listOptions1.add(op_object);
                                 }
                             }
                             mn_Object.setOptionObjectArrayList(listOptions);
                             mn_Object1.setOptionObjectArrayList(listOptions1);
                             listMenu.add(mn_Object);
-                            listChild.put(listMenu.get(i),listOptions);
-                            if (listOptions1.size()>0){
+                            listChild.put(listMenu.get(i), listOptions);
+                            if (listOptions1.size() > 0) {
                                 listMenu1.add(mn_Object1);
-                                listChild1.put(listMenu1.get(i1),listOptions1);
+                                listChild1.put(listMenu1.get(i1), listOptions1);
                                 i1++;
                             }
 
@@ -862,25 +864,25 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 pDialog.cancel();
             if (s.equalsIgnoreCase("Success")) {
 //                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
-                QTSRun.setFr_request(getApplicationContext(),Integer.parseInt(us_Object1.getFriend_request_count()));
+                QTSRun.setFr_request(getApplicationContext(), Integer.parseInt(us_Object1.getFriend_request_count()));
                 QTSRun.setToken(getApplicationContext(), token);
                 QTSRun.setTokenhash(getApplicationContext(), md5(token_hash));
                 QTSRun.SetLogin_token(getApplicationContext(), login_token);
-                QTSConst.arr.clear();
+                //QTSConst.arr.clear();
                 getNavMenu();
                 _imageLoader.DisplayImage(us_Object1.getProfile_pic_url(), ivAvatar);
                 ShortcutBadger.applyCount(getApplicationContext(), Integer.parseInt(us_Object1.getNotification_count()));
                 is_reload = false;
-                if (Integer.parseInt(us_Object1.getNotification_count())>0){
-                    tv_Notif.setText(""+us_Object1.getNotification_count());
+                if (Integer.parseInt(us_Object1.getNotification_count()) > 0) {
+                    tv_Notif.setText("" + us_Object1.getNotification_count());
                     tv_Notif.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     tv_Notif.setVisibility(View.INVISIBLE);
                 }
-                if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
-                    tv_friendReq.setText(""+us_Object1.getFriend_request_count());
+                if (Integer.parseInt(us_Object1.getFriend_request_count()) > 0) {
+                    tv_friendReq.setText("" + us_Object1.getFriend_request_count());
                     tv_friendReq.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     tv_friendReq.setVisibility(View.INVISIBLE);
                 }
                 listAdapter = new ExpandListAdapter(MainActivity.this,
@@ -889,20 +891,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 listAdapter1 = new ExpandListAdapter(MainActivity.this,
                         listMenu1, listChild1);
                 expListView1.setAdapter(listAdapter1);
-                if (expListView.getCount()>0){
+                if (expListView.getCount() > 0) {
                     for (int i = 0; i < listMenu.size(); i++) {
                         expListView.expandGroup(i);
                     }
                     expListView.setVisibility(View.VISIBLE);
                     tvNoFound.setVisibility(View.GONE);
-                }else{
+                } else {
                     tvNoFound.setVisibility(View.VISIBLE);
                     expListView.setVisibility(View.GONE);
                     expListView1.setVisibility(View.GONE);
                 }
-                Log.e("arrayParents","arrayParents.size : "+arrayParents.size());
+                Log.e("arrayParents", "arrayParents.size : " + arrayParents.size());
                 if (!MyApplication.isRefreshList) {
-                    if (!isShowRequest){
+                    if (!isShowRequest) {
                         ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                         tvNoRequest.setVisibility(View.VISIBLE);
                         btnFriendMenu.setVisibility(View.VISIBLE);
@@ -912,7 +914,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         isShowRequest = true;
                         isRequest = false;
                         MyApplication.isRefreshList = true;
-                        if (arrayParents.size()>0){
+                        if (arrayParents.size() > 0) {
                             isClickRequest = true;
                             myCustomAdapter = new MyCustomAdapter(MainActivity.this, arrayParents);
                             mExpandableListFriend.setAdapter(myCustomAdapter);
@@ -920,9 +922,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             for (int i = 0; i < arrayParents.size(); i++) {
                                 mExpandableListFriend.expandGroup(i);
                             }
-                        }
-                        else isClickRequest = false;
-                    }else {
+                        } else isClickRequest = false;
+                    } else {
                         isRequest = true;
                         tvNoRequest.setVisibility(View.GONE);
                         btnFriendMenu.setVisibility(View.GONE);
@@ -931,13 +932,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         mExpandableListFriend.setVisibility(View.GONE);
                         MyApplication.isRefreshList = false;
                         ivUsers.setBackgroundResource(R.drawable.ic_users);
-                        if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
-                            tv_friendReq.setText(""+us_Object1.getFriend_request_count());
+                        if (Integer.parseInt(us_Object1.getFriend_request_count()) > 0) {
+                            tv_friendReq.setText("" + us_Object1.getFriend_request_count());
                             tv_friendReq.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             tv_friendReq.setVisibility(View.INVISIBLE);
                         }
-                        if (arrayParents.size()>0){
+                        if (arrayParents.size() > 0) {
                             myCustomAdapter = new MyCustomAdapter(MainActivity.this, arrayParents);
                             mExpandableListFriend.setAdapter(myCustomAdapter);
                             myCustomAdapter.notifyDataSetChanged();
@@ -945,11 +946,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                                 mExpandableListFriend.expandGroup(i);
                             }
                             isClickRequest = true;
-                        }else isClickRequest = false;
+                        } else isClickRequest = false;
                     }
-                }else {
+                } else {
 //                    MyApplication.isRefreshList = false;
-                    if (arrayParents.size()>0){
+                    if (arrayParents.size() > 0) {
                         isRequest = false;
                         isClickRequest = true;
                         isShowRequest = true;
@@ -967,8 +968,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         for (int i = 0; i < arrayParents.size(); i++) {
                             mExpandableListFriend.expandGroup(i);
                         }
-                    }else {
-                        if (!isShowRequest){
+                    } else {
+                        if (!isShowRequest) {
                             ivUsers.setBackgroundResource(R.drawable.ic_menulist);
                             tvNoRequest.setVisibility(View.VISIBLE);
                             btnFriendMenu.setVisibility(View.VISIBLE);
@@ -979,7 +980,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             isShowRequest = true;
                             isRequest = false;
                             isClickRequest = false;
-                        }else {
+                        } else {
                             isRequest = true;
                             isClickRequest = false;
                             MyApplication.isRefreshList = false;
@@ -989,10 +990,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             expListView1.setVisibility(View.GONE);
                             mExpandableListFriend.setVisibility(View.GONE);
                             ivUsers.setBackgroundResource(R.drawable.ic_users);
-                            if (Integer.parseInt(us_Object1.getFriend_request_count())>0){
-                                tv_friendReq.setText(""+us_Object1.getFriend_request_count());
+                            if (Integer.parseInt(us_Object1.getFriend_request_count()) > 0) {
+                                tv_friendReq.setText("" + us_Object1.getFriend_request_count());
                                 tv_friendReq.setVisibility(View.VISIBLE);
-                            }else{
+                            } else {
                                 tv_friendReq.setVisibility(View.INVISIBLE);
                             }
                         }
@@ -1000,7 +1001,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     }
                 }
 
-                Log.e("MainActivity","isRequest Loading:" +isRequest);
+                Log.e("MainActivity", "isRequest Loading:" + isRequest);
 
             } else {
                 QTSRun.showToast(getApplicationContext(), "Login failed");
@@ -1008,12 +1009,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 MyApplication.isRefreshList = true;
                 Intent intent = new Intent(MainActivity.this,
                         LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         }
     }
+
     /// create MD5 //////////////
     public static final String md5(final String s) {
         try {
@@ -1042,74 +1044,76 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     @Override
     protected void onRestart() {
-        if (!QTSRun.getIsCheck(getApplicationContext())){
-            if (QTSRun.getBadge(getApplicationContext())>0){
-                tv_Notif.setText(""+QTSRun.getBadge(getApplicationContext()));
+        if (!QTSRun.getIsCheck(getApplicationContext())) {
+            if (QTSRun.getBadge(getApplicationContext()) > 0) {
+                tv_Notif.setText("" + QTSRun.getBadge(getApplicationContext()));
                 tv_Notif.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 tv_Notif.setVisibility(View.INVISIBLE);
             }
-            if (QTSRun.getFr_request(getApplicationContext())>0){
-                tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+            if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+                tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
                 tv_friendReq.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 tv_friendReq.setVisibility(View.INVISIBLE);
             }
-            if (QTSRun.isNetworkAvailable(getApplicationContext())){
+            if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 isTickCal = false;
                 ivCalendar.setBackgroundResource(R.drawable.ic_calendar1);
                 localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                         .format(Calendar.getInstance().getTime()).toString();
                 new GetData().execute();
-            }else{
+            } else {
 //                QTSRun.showToast(getApplicationContext(),"Network is disconnected");
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
                 startActivity(intent);
             }
-        }else{
-            QTSRun.setIsCheck(getApplicationContext(),false);
+        } else {
+            QTSRun.setIsCheck(getApplicationContext(), false);
         }
 
         super.onRestart();
     }
-//show dialog logout
-     public void ShowDialog() {
-     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-     builder.setTitle(getResources().getString(R.string.app_name));
-     builder.setMessage("Do you want to logout?").setCancelable(false)
-             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                 @Override
-                 public void onClick(DialogInterface dialog, int which) {
 
-                     if (QTSRun.getIsFBLogin(getApplicationContext())){
-                         QTSRun.setIsFBLogin(getApplicationContext(),false);
+    //show dialog logout
+    public void ShowDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(getResources().getString(R.string.app_name));
+        builder.setMessage("Do you want to logout?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                         LoginManager.getInstance().logOut();
-                     }
-                     Intent intent = new Intent(MainActivity.this,
-                             LoginActivity.class);
-                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                     startActivity(intent);
-                     QTSRun.setIsRegister(getApplicationContext(),false);
-                     QTSConst.arr.clear();
-                     finish();
-                 }
-             })
-     .setNegativeButton("No", new DialogInterface.OnClickListener() {
-         public void onClick(DialogInterface dialog, int id) {
-             return;
-         }
+                        if (QTSRun.getIsFBLogin(getApplicationContext())) {
+                            QTSRun.setIsFBLogin(getApplicationContext(), false);
+                            LoginManager.getInstance().logOut();
+                        }
+                        Intent intent = new Intent(MainActivity.this,
+                                LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        QTSRun.setIsRegister(getApplicationContext(), false);
+                        QTSConst.arrtitle.clear();
+                        QTSConst.arrListaction.clear();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        return;
+                    }
 
-     });
-     AlertDialog alert = builder.create();
-     alert.show();
-     }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        QTSRun.setIsOpenApp(getApplicationContext(),true);
+        QTSRun.setIsOpenApp(getApplicationContext(), true);
         registerReceiver(myReceiver, intentFilter);
 //            try {
 //                //        if (MainActivity.getBroadcast == 1){
@@ -1126,20 +1130,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
 //                ex.printStackTrace();
 //            }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(myReceiver);
-        QTSRun.setIsOpenApp(getApplicationContext(),false);
+        QTSRun.setIsOpenApp(getApplicationContext(), false);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        QTSRun.setIsOpenApp(getApplicationContext(),false);
+        QTSRun.setIsOpenApp(getApplicationContext(), false);
     }
 
-    public class MyReceiver extends BroadcastReceiver{
+    public class MyReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1148,19 +1153,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
             int numerRequest = intent.getIntExtra("friend_requests", 0);
             String url = "";
             url = intent.getStringExtra("click_destination");
-            Log.e("badge", ": broadcast:"+numerBadge);
-            Log.e("friend_requests",": broadcast:"+numerRequest);
+            Log.e("badge", ": broadcast:" + numerBadge);
+            Log.e("friend_requests", ": broadcast:" + numerRequest);
 
-            if (numerBadge > 0){
-                if (QTSRun.getIsOpenApp(context))
-                {
-                    mainActivity.tv_Notif.setText(numerBadge+"");
+            if (numerBadge > 0) {
+                if (QTSRun.getIsOpenApp(context)) {
+                    mainActivity.tv_Notif.setText(numerBadge + "");
                     mainActivity.tv_Notif.setVisibility(View.VISIBLE);
 
                     mainActivity.localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                             .format(Calendar.getInstance().getTime()).toString();
                 }
-            }else {
+            } else {
                 if (QTSRun.getBadge((context)) > 0) {
                     mainActivity.tv_Notif.setText(QTSRun.getBadge(context) + "");
                 } else {
@@ -1168,12 +1172,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
 
             }
-            if (numerRequest > 0){
+            if (numerRequest > 0) {
                 if (QTSRun.getIsOpenApp(context)) {
                     mainActivity.tv_friendReq.setText(numerRequest + "");
                     mainActivity.tv_friendReq.setVisibility(View.VISIBLE);
                 }
-            }else {
+            } else {
                 if (QTSRun.getFr_request(context) > 0) {
                     mainActivity.tv_friendReq.setText(QTSRun.getFr_request(context) + "");
                 } else {
@@ -1181,8 +1185,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
             }
 
-            if (url.toString().trim().length()!=0){
-                QTSRun.setDestination(context,url);
+            if (url.toString().trim().length() != 0) {
+                QTSRun.setDestination(context, url);
             }
             if (QTSRun.getIsOpenApp(context)) {
                 if (!is_reload) {
@@ -1237,7 +1241,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         private List<FriendObjParent> mParent;
         private ImageLoaderAvar imageLoader;
         private int w = 1;
-        public MyCustomAdapter(Context context, List<FriendObjParent> parent){
+
+        public MyCustomAdapter(Context context, List<FriendObjParent> parent) {
             this._context = context;
             mParent = parent;
             inflater = LayoutInflater.from(context);
@@ -1293,16 +1298,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
             holder.groupPosition = groupPosition;
 
             if (view == null) {
-                view = inflater.inflate(R.layout.item_header_list, viewGroup,false);
+                view = inflater.inflate(R.layout.item_header_list, viewGroup, false);
             }
 
             TextView textView = (TextView) view.findViewById(R.id.tvDay);
-            TextView textsa= (TextView) view.findViewById(R.id.tvDate);
+            TextView textsa = (TextView) view.findViewById(R.id.tvDate);
             textsa.setVisibility(View.GONE);
             QTSRun.setFontTV(_context, textView, QTSConst.FONT_ROBOTOSLAB_REGULAR);
-            QTSRun.setFontTV(_context,textsa,QTSConst.FONT_ROBOTOSLAB_REGULAR);
+            QTSRun.setFontTV(_context, textsa, QTSConst.FONT_ROBOTOSLAB_REGULAR);
             textView.setText(getGroup(groupPosition).toString());
-            Log.e("Header List" ,"parent:"+getGroup(groupPosition).toString());
+            Log.e("Header List", "parent:" + getGroup(groupPosition).toString());
 
             view.setTag(holder);
 
@@ -1319,37 +1324,37 @@ public class MainActivity extends Activity implements View.OnClickListener{
             holder.groupPosition = groupPosition;
 
             if (view == null) {
-                view = inflater.inflate(R.layout.item_list_friend, viewGroup,false);
+                view = inflater.inflate(R.layout.item_list_friend, viewGroup, false);
             }
             ImageView ivAvatar = (ImageView) view.findViewById(R.id.viewAvatar);
             TextView tvName = (TextView) view.findViewById(R.id.item_Title);
             TextView tvContent = (TextView) view.findViewById(R.id.item_content);
             ImageView iconHome = (ImageView) view.findViewById(R.id.iconHome);
             ImageView iconBaged = (ImageView) view.findViewById(R.id.iconBaged);
-            QTSRun.setLayoutView(ivAvatar, w/5,w/5);
+            QTSRun.setLayoutView(ivAvatar, w / 5, w / 5);
             QTSRun.setFontTV(_context, tvName, QTSConst.FONT_ROBOTOSLAB_BOLD);
             QTSRun.setFontTV(_context, tvContent, QTSConst.FONT_ROBOTOSLAB_REGULAR);
 
             tvName.setText(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getName());
-            tvContent.setText(Html.fromHtml("" +mParent.get(groupPosition).getmArrayChildren().get(childPosition).getRequest_html()));
-            imageLoader.DisplayImage(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getPicture_url(),ivAvatar);
-            if (mParent.get(groupPosition).getIsRequest() == 1){
+            tvContent.setText(Html.fromHtml("" + mParent.get(groupPosition).getmArrayChildren().get(childPosition).getRequest_html()));
+            imageLoader.DisplayImage(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getPicture_url(), ivAvatar);
+            if (mParent.get(groupPosition).getIsRequest() == 1) {
                 iconHome.setBackgroundResource(R.drawable.btn_check);
-            }else iconHome.setBackgroundResource(R.drawable.btn_adduser);
+            } else iconHome.setBackgroundResource(R.drawable.btn_adduser);
 
             iconHome.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AddRequests().execute(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getFr_id(),"accept");
+                    new AddRequests().execute(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getFr_id(), "accept");
                 }
             });
             iconBaged.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AddRequests().execute(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getFr_id(),"deny");
+                    new AddRequests().execute(mParent.get(groupPosition).getmArrayChildren().get(childPosition).getFr_id(), "deny");
                 }
             });
-            Log.e("Footer List" ,"tvName:"+mParent.get(groupPosition).getmArrayChildren().get(childPosition).getName());
+            Log.e("Footer List", "tvName:" + mParent.get(groupPosition).getmArrayChildren().get(childPosition).getName());
 
             view.setTag(holder);
 
@@ -1375,105 +1380,120 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    private void getNavMenu(){
-        Log.e("addmang","add mang");
-        Ion.with(MainActivity.this)
-                .load(QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1")
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
+    private void getNavMenu() {
+        if (QTSConst.arrtitle.size() <= 0) {
+            Log.e("addmang", "Main add");
+            Ion.with(MainActivity.this)
+                    .load(QTSConst.URL_GET_MENU + "?token_hash=" + QTSRun.getTokenhash(getApplicationContext()) + "&get-nav=1")
+                    .asJsonObject()
+                    .setCallback(new FutureCallback<JsonObject>() {
+                        @Override
+                        public void onCompleted(Exception e, JsonObject result) {
 
-                        Log.e("error",QTSConst.URL_GET_MENU+"?token_hash="+QTSRun.getTokenhash(getApplicationContext())+"&get-nav=1");
-                        if (e == null){
-                            try {
-                                json = new JSONObject(result.toString());
-                                if (json != null) {
-                                    Log.e("Result", json.toString());
-                                    if (json.getString("status").equalsIgnoreCase("Success")){
-                                        JSONArray jsonAddress = json.getJSONArray("nav");
-                                        Log.e("Nav Json array",jsonAddress.toString());
-                                        QTSConst.arrList = new ArrayList<NavMenuObject>();
-                                        NavMenuObject pr_Object = new NavMenuObject();
+                            Log.e("error", QTSConst.URL_GET_MENU + "?token_hash=" + QTSRun.getTokenhash(getApplicationContext()) + "&get-nav=1");
+                            if (e == null) {
+                                try {
+                                    json = new JSONObject(result.toString());
+                                    if (json != null) {
+                                        Log.e("Result", json.toString());
+                                        if (json.getString("status").equalsIgnoreCase("Success")) {
+                                            JSONArray jsonAddress = json.getJSONArray("nav");
+                                            Log.e("Nav Json array", jsonAddress.toString());
+                                            QTSConst.arrList = new ArrayList<NavMenuObject>();
+                                            NavMenuObject pr_Object = new NavMenuObject();
+                                            QTSRun.setToken(getApplicationContext(), json.getString("token"));
+                                            QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
+                                            QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                            Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
+                                            for (int i = 0; i <= jsonAddress.length(); i++) {
+                                                JSONObject navmenu = jsonAddress.getJSONObject(i);
+                                                pr_Object.setAction(navmenu.getString("action"));
+                                                pr_Object.setTitle(navmenu.getString("title"));
+                                                Log.e("Title", navmenu.getString("title").toString());
+                                                Log.e("Action", navmenu.getString("action").toString());
+                                                Log.e("size ", i +" a "+ QTSConst.arrList.size() +"");
+                                                QTSConst.arrList.add(new NavMenuObject(navmenu.getString("action"), navmenu.getString("title")));
+                                                QTSConst.arr.add(new LVNav(navmenu.getString("title")));
 
-                                        QTSRun.setToken(getApplicationContext(), json.getString("token"));
-                                        QTSRun.SetLogin_token(getApplicationContext(), json.getString("login_token"));
-                                        QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
-                                        Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
-                                        for (int i=0;i<=jsonAddress.length();i++)
-                                        {
-                                            JSONObject navmenu = jsonAddress.getJSONObject(i);
-                                            pr_Object.setAction(navmenu.getString("action"));
-                                            pr_Object.setTitle(navmenu.getString("title"));
-                                            pr_Object.setId(i);
-                                            Log.e("Title",navmenu.getString("title").toString());
-                                            Log.e("Action",navmenu.getString("action").toString());
-                                            Log.e("Id",i+"");
-                                            QTSConst.arrList.add(new NavMenuObject(i,navmenu.getString("action"),navmenu.getString("title")));
-                                            QTSConst.arr.add(new LVNav(navmenu.getString("title")));
+                                                if(!(QTSConst.arrList.get(i).getAction().toString().equalsIgnoreCase("app:close-webview"))){
+                                                    QTSConst.arrListaction.add(QTSConst.arrList.get(i));
+                                                    QTSConst.arrtitle.add(QTSConst.arr.get(i));
+                                                }
+                                                Log.e("show arrList",QTSConst.arrListaction.size()+"a");
+                                                Log.e("show arrList",QTSConst.arrtitle.size()+"b");
+                                            }
+
+                                        } else {
+                                            Log.e("error", "No Success");
                                         }
+                                    }
 
-                                    }
-                                    else {
-                                        Log.e("error","No Success");
-                                    }
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
                                 }
-
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
                             }
                         }
-                    }
-                });
+                    });
+        }
     }
-//add and onItemClick lv menu nav
+
+    //add and onItemClick lv menu nav
     private void addDrawerItems() {
-//        mAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,arr);
-//        lv_navmenu.setAdapter(mAdapter);
-        adt = new AdapterLvNavMenu(MainActivity.this,QTSConst.arr);
+
+        adt = new AdapterLvNavMenu(MainActivity.this, QTSConst.arrtitle);
         lv_navmenu.setAdapter(adt);
 
         lv_navmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (QTSConst.arrList.get(position).getAction().toString().contains("app:")){
-                    if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:only-show-eating")){
+                if (QTSConst.arrListaction.get(position).getAction().toString().contains("app:")) {
+                    if (QTSConst.arrListaction.get(position).getAction().toString().equalsIgnoreCase("app:only-show-eating")) {
                         ivCalendar();
-                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:logout")){
+                        hideMenuNav();
+                        ImageView cblist = (ImageView) view.findViewById(R.id.cblist);
+                        if (ischeckimage){
+                            ischeckimage =! ischeckimage;
+                            cblist.setVisibility(View.VISIBLE);
+                        }else {
+                            ischeckimage =! ischeckimage;
+                            cblist.setVisibility(View.GONE);
+                        }
+
+                    } else if (QTSConst.arrListaction.get(position).getAction().toString().equalsIgnoreCase("app:logout")) {
                         ShowDialog();
-                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-menu"))
-                    {
+                    } else if (QTSConst.arrListaction.get(position).getAction().toString().equalsIgnoreCase("app:close-menu")) {
                         hideMenuNav();
                     }
-                    Log.e("Chuc Nang",QTSConst.arrList.get(position).getAction().toString());
-                }else {
-                    Log.e("show item lv",QTSConst.arrList.get(position).getAction().toString());
-                    Intent intent = new Intent(MainActivity.this,WebBrowser.class);
-                    intent.putExtra("url",QTSConst.arrList.get(position).getAction().toString());
+                    Log.e("Chuc Nang", QTSConst.arrListaction.get(position).getAction().toString());
+                } else {
+                    Log.e("show item lv", QTSConst.arrListaction.get(position).getAction().toString());
+                    Intent intent = new Intent(MainActivity.this, WebBrowser.class);
+                    intent.putExtra("url", QTSConst.arrListaction.get(position).getAction().toString());
                     startActivity(intent);
                 }
             }
         });
     }
-//show item expanddable
-    private void ivCalendar(){
+
+    //show item expanddable
+    private void ivCalendar() {
         isRequest = true;
         mExpandableListFriend.setVisibility(View.GONE);
         MyApplication.isRefreshList = false;
         ivUsers.setBackgroundResource(R.drawable.ic_users);
         tvNoRequest.setVisibility(View.GONE);
         btnFriendMenu.setVisibility(View.GONE);
-        if (QTSRun.getFr_request(getApplicationContext())>0){
-            tv_friendReq.setText(""+QTSRun.getFr_request(getApplicationContext()));
+        if (QTSRun.getFr_request(getApplicationContext()) > 0) {
+            tv_friendReq.setText("" + QTSRun.getFr_request(getApplicationContext()));
             if (QTSRun.isNetworkAvailable(getApplicationContext())) {
                 if (listParent.size() > 0)
                     tv_friendReq.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 Intent intent = new Intent(MainActivity.this,
                         NoInternetAct.class);
                 startActivity(intent);
             }
-        }else{
+        } else {
             tv_friendReq.setVisibility(View.INVISIBLE);
         }
         if (!isTickCal) {
@@ -1518,30 +1538,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         }
     }
-//hide listview menunav
+
+    //hide listview menunav
     private void hideMenuNav() {
         if (ismenushow) {
-
-            ismenushow=!ismenushow;
+            Log.e("showlistview","show list view");
+            ismenushow = !ismenushow;
             lnlv.setVisibility(View.VISIBLE);
             lnlv.startAnimation(animslide_left);
             lv_navmenu.setVisibility(View.VISIBLE);
 
-        }else{
-            ismenushow=!ismenushow;
+        } else {
+            Log.e("showlistview","hide list view");
+            ismenushow = !ismenushow;
             lnlv.startAnimation(animslide_right);
-            cd=new CountDownTimer(200,100) {
-
-                @Override
-                public void onTick(long millisUntilFinished) {
-                }
-                @Override
-                public void onFinish() {
-                    lv_navmenu.setVisibility(View.GONE);
                     lnlv.setVisibility(View.GONE);
-                }
-            };
-            cd.start();
+
         }
     }
 
@@ -1549,6 +1561,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-        QTSConst.arr.clear();
+        QTSConst.arrtitle.clear();
+        QTSConst.arrListaction.clear();
     }
 }

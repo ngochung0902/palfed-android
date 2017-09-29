@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
@@ -47,6 +48,7 @@ import com.palfed.android.menu.activities.commonhelper.JSONParser;
 import com.palfed.android.menu.activities.commonhelper.QTSConst;
 import com.palfed.android.menu.activities.commonhelper.QTSRun;
 import com.palfed.android.menu.activities.objects.LVNav;
+import com.palfed.android.menu.activities.objects.NavMenuObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +70,10 @@ import static android.os.Build.VERSION_CODES;
  * Created by Android QTS on 1/6/2016.
  */
 public class WebBrowser extends Activity implements View.OnClickListener {
-
+    private RelativeLayout rl_icmenu;
+    private boolean ischeckivClose = false;
+    private ArrayList<LVNav> arr = new ArrayList<LVNav>();
+    private ArrayList<NavMenuObject> arrList = new ArrayList<NavMenuObject>();
     private AdapterLvNavMenu adt;
     private CountDownTimer cd;
     private LinearLayout lnlv;
@@ -100,6 +105,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.web_layout);
+        rl_icmenu = (RelativeLayout) findViewById(R.id.rl_icmenu);
         animslide_left = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.move_left);
         animslide_right = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -116,6 +122,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         btnX = (ImageView) findViewById(R.id.btnX);
         webBrowser = (WebView) findViewById(R.id.wen_browser);
         ivClose.setEnabled(false);
+        ischeckivClose = false;
         QTSRun.setIsCheck(getApplicationContext(), true);
         loadWebView();
 
@@ -125,6 +132,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         else {
 //            QTSRun.showToast(getApplicationContext(), "Network is disconnected");
             ivClose.setEnabled(true);
+            ischeckivClose = true;
             isLoading = true;
             Intent in = new Intent(WebBrowser.this,
                     NoInternetAct.class);
@@ -155,6 +163,12 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         btnPre.setOnClickListener(this);
         ic_navmenu.setOnClickListener(this);
         ivClose.setOnClickListener(this);
+        rl_icmenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideMenuNav();
+            }
+        });
 
     }
 
@@ -204,29 +218,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
             webBrowser.stopLoading();
             QTSRun.setIsService(getApplicationContext(),false);
         }else if (v == ic_navmenu){
-            if (ismenushow) {
-
-                ismenushow=!ismenushow;
-                lnlv.setVisibility(View.VISIBLE);
-                lnlv.startAnimation(animslide_left);
-                lv_navmenu.setVisibility(View.VISIBLE);
-
-            }else{
-                ismenushow=!ismenushow;
-                lnlv.startAnimation(animslide_right);
-                cd=new CountDownTimer(200,100) {
-
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                    }
-                    @Override
-                    public void onFinish() {
-                        lv_navmenu.setVisibility(View.GONE);
-                        lnlv.setVisibility(View.GONE);
-                    }
-                };
-                cd.start();
-            }
+            hideMenuNav();
         }else if (v == ivClose){
             Log.e("onlick","onclick");
             QTSRun.setIsService(getApplicationContext(), false);
@@ -300,6 +292,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                                     QTSRun.setTokenhash(getApplicationContext(), md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
                                     Log.e("new token hash", md5(QTSRun.getSecret(getApplicationContext()) + json.getString("token")));
                                     ivClose.setEnabled(true);
+                                    ischeckivClose = true;
                                 }
                                 isLoading = true;
                             } catch (JSONException e1) {
@@ -589,25 +582,43 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                     }
                 });
     }
+
     private void addDrawerItems() {
-        adt = new AdapterLvNavMenu(WebBrowser.this,QTSConst.arr);
+        adt = new AdapterLvNavMenu(WebBrowser.this,arr);
         lv_navmenu.setAdapter(adt);
+        for (int j =0 ;j<=QTSConst.arrList.size()-1;j++){
+            if(!(QTSConst.arrList.get(j).getAction().toString().equalsIgnoreCase("app:only-show-eating"))){
+                arrList.add(QTSConst.arrList.get(j));
+                arr.add(QTSConst.arr.get(j));
+            }
+            Log.e("arr show",QTSConst.arrList.get(j).getAction().toString());
+        }
 
         lv_navmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (QTSConst.arrList.get(position).getAction().toString().contains("app:")){
-                    Log.e("Chuc Nang",QTSConst.arrList.get(position).getAction().toString());
-                    if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:only-show-eating")){
+                if (arrList.get(position).getAction().toString().contains("app:")) {
+                    if (arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-webview")) {
+                        if (ischeckivClose == true){
+                            QTSRun.setIsService(getApplicationContext(), false);
+                            Intent intent = new Intent(WebBrowser.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }else {
+                            QTSRun.showToast(getApplicationContext(),"Back failed");
+                            hideMenuNav();
+                        }
 
-                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:logout")){
+                    } else if (arrList.get(position).getAction().toString().equalsIgnoreCase("app:logout")) {
                         ShowDialog();
-                    }else if (QTSConst.arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-menu"))
-                    {
+                    } else if (arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-menu")) {
                         hideMenuNav();
                     }
+                    Log.e("Chuc Nang", arrList.get(position).getAction().toString());
                 }else {
-                    Log.e("show item lv",QTSConst.arrList.get(position).getAction().toString());
+                    Log.e("show item lv", arrList.get(position).getAction().toString());
                     webBrowser.getSettings().setJavaScriptEnabled(true);
                     webBrowser.getSettings().setAllowFileAccess(true);
                     webBrowser.getSettings().setAllowContentAccess(true);
@@ -619,10 +630,9 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                     webBrowser.addJavascriptInterface(new WebViewJavaScriptInterface(WebBrowser.this), "Android");
                     webBrowser.getSettings().setAppCacheEnabled(true);
                     //webBrowser.loadUrl("https://design.palfed.com/upload-test");
-                    webBrowser.loadUrl(QTSConst.arrList.get(position).getAction().toString());
+                    webBrowser.loadUrl(arrList.get(position).getAction().toString());
                     hideMenuNav();
                 }
-
             }
         });
     }
@@ -630,26 +640,16 @@ public class WebBrowser extends Activity implements View.OnClickListener {
     private void hideMenuNav() {
         if (ismenushow) {
 
-            ismenushow=!ismenushow;
+            ismenushow = !ismenushow;
             lnlv.setVisibility(View.VISIBLE);
             lnlv.startAnimation(animslide_left);
             lv_navmenu.setVisibility(View.VISIBLE);
 
-        }else{
-            ismenushow=!ismenushow;
+        } else {
+            ismenushow = !ismenushow;
             lnlv.startAnimation(animslide_right);
-            cd=new CountDownTimer(200,100) {
+            lnlv.setVisibility(View.GONE);
 
-                @Override
-                public void onTick(long millisUntilFinished) {
-                }
-                @Override
-                public void onFinish() {
-                    lv_navmenu.setVisibility(View.GONE);
-                    lnlv.setVisibility(View.GONE);
-                }
-            };
-            cd.start();
         }
     }
 
@@ -673,6 +673,8 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                         startActivity(intent);
                         QTSRun.setIsRegister(getApplicationContext(),false);
                         finish();
+                        QTSConst.arrtitle.clear();
+                        QTSConst.arrListaction.clear();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {

@@ -34,14 +34,20 @@
             android:background="@drawable/ic_clear"
             android:layout_marginRight="@dimen/margin10"/>
 
-        <ImageView
-            android:id="@+id/ic_navmenu"
-            android:layout_width="@dimen/margin30"
-            android:layout_height="@dimen/margin30"
-            android:background="@drawable/ic_menu"
-            android:layout_alignTop="@+id/ivClose"
+        <RelativeLayout
+            android:id="@+id/rl_icmenu"
+            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_width="@dimen/margin50"
+            android:layout_height="@dimen/margin50"
+            android:gravity="center|right">
+            <ImageView
+                android:id="@+id/ic_navmenu"
+                android:layout_width="@dimen/margin30"
+                android:layout_height="@dimen/margin30"
+                android:background="@drawable/ic_menu" />
+        </RelativeLayout>
 
     </RelativeLayout>
     <WebView

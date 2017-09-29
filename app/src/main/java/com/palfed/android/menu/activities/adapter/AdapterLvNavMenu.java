@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 public class AdapterLvNavMenu extends BaseAdapter {
     Context context;
     ArrayList<LVNav> arrayList;
+    int selecte = -1;
 
     public AdapterLvNavMenu(Context context, ArrayList<LVNav> arrayList) {
         this.context = context;
@@ -44,12 +47,24 @@ public class AdapterLvNavMenu extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = inflater.inflate(R.layout.linelv,null);
         TextView tv = (TextView) convertView.findViewById(R.id.tv_lvnavmenu);
+//        CheckBox cblist = (CheckBox) convertView.findViewById(R.id.cblist);
         LVNav lvNav = arrayList.get(position);
         tv.setText(lvNav.getTitle());
+//        cblist.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked){
+//                    selecte = position;
+//                }else {
+//                    selecte = -1;
+//                }
+//                notifyDataSetChanged();
+//            }
+//        });
         QTSRun.setFontTV(context, tv, QTSConst.FONT_ROBOTOSLAB_REGULAR);
         return convertView;
     }
