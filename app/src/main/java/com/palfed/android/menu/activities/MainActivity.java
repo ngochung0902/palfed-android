@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ExpandableListView mExpandableListFriend;
     List<FriendObjParent> arrayParents = null;
     private MyCustomAdapter myCustomAdapter;
-
+    ProgressDialog pDialog;
     boolean isShowRequest = true;
     boolean isClick = true;
     boolean isTickCal = false;
@@ -117,7 +117,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageLoaderAvar _imageLoader;
     private String longitude = "";
     private String latitude = "";
-
     private GPSTracker gps;
     MyReceiver myReceiver;
     IntentFilter intentFilter;
@@ -568,7 +567,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         String login_token = "";
         String token = QTSRun.getToken(getApplicationContext());
         String secret = QTSRun.getSecret(getApplicationContext());
-        ProgressDialog pDialog;
+
 
         @Override
         protected void onPreExecute() {
@@ -861,7 +860,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (pDialog != null)
-                pDialog.cancel();
+//                pDialog.cancel();
             if (s.equalsIgnoreCase("Success")) {
 //                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
                 QTSRun.setFr_request(getApplicationContext(), Integer.parseInt(us_Object1.getFriend_request_count()));
@@ -1381,6 +1380,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void getNavMenu() {
+//        pDialog1 = new ProgressDialog(MainActivity.this);
+//        pDialog1.setMessage("Refreshing menu...");
+//        pDialog1.show();
+//        pDialog1.setCancelable(false);
         if (QTSConst.arrtitle.size() <= 0) {
             Log.e("addmang", "Main add");
             Ion.with(MainActivity.this)
@@ -1414,10 +1417,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                                 Log.e("size ", i +" a "+ QTSConst.arrList.size() +"");
                                                 QTSConst.arrList.add(new NavMenuObject(navmenu.getString("action"), navmenu.getString("title")));
                                                 QTSConst.arr.add(new LVNav(navmenu.getString("title")));
-
+                                                pDialog.cancel();
                                                 if(!(QTSConst.arrList.get(i).getAction().toString().equalsIgnoreCase("app:close-webview"))){
                                                     QTSConst.arrListaction.add(QTSConst.arrList.get(i));
                                                     QTSConst.arrtitle.add(QTSConst.arr.get(i));
+                                                    pDialog.cancel();
                                                 }
                                                 Log.e("show arrList",QTSConst.arrListaction.size()+"a");
                                                 Log.e("show arrList",QTSConst.arrtitle.size()+"b");
@@ -1425,11 +1429,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                                         } else {
                                             Log.e("error", "No Success");
+                                            pDialog.cancel();
                                         }
                                     }
 
                                 } catch (JSONException e1) {
                                     e1.printStackTrace();
+                                    pDialog.cancel();
                                 }
                             }
                         }
@@ -1563,5 +1569,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         finish();
         QTSConst.arrtitle.clear();
         QTSConst.arrListaction.clear();
+        Log.e("error","error");
     }
 }
