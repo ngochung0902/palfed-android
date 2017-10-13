@@ -15,6 +15,9 @@ import java.util.ArrayList;
  * 
  */
 public class QTSConst {
+
+	public static boolean checklogin = false;
+	public static boolean closewebview = false;
 	public static ArrayList<LVNav> arrtitle = new ArrayList<LVNav>();
 	public static ArrayList<NavMenuObject> arrListaction = new ArrayList<NavMenuObject>();
 

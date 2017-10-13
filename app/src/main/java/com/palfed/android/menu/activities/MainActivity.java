@@ -859,8 +859,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (pDialog != null)
-//                pDialog.cancel();
+            if (pDialog != null && QTSConst.checklogin==true) {
+                pDialog.cancel();
+                QTSConst.checklogin= false;
+            }
+            if (pDialog != null && QTSConst.closewebview==true) {
+                pDialog.cancel();
+                QTSConst.closewebview= false;
+            }
             if (s.equalsIgnoreCase("Success")) {
 //                QTSRun.setBadge(getApplicationContext(),Integer.parseInt(us_Object1.getNotification_count()));
                 QTSRun.setFr_request(getApplicationContext(), Integer.parseInt(us_Object1.getFriend_request_count()));
@@ -1417,11 +1423,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                                 Log.e("size ", i +" a "+ QTSConst.arrList.size() +"");
                                                 QTSConst.arrList.add(new NavMenuObject(navmenu.getString("action"), navmenu.getString("title")));
                                                 QTSConst.arr.add(new LVNav(navmenu.getString("title")));
-                                                pDialog.cancel();
+                                                if (QTSConst.checklogin==false)
+                                                    pDialog.cancel();
                                                 if(!(QTSConst.arrList.get(i).getAction().toString().equalsIgnoreCase("app:close-webview"))){
                                                     QTSConst.arrListaction.add(QTSConst.arrList.get(i));
                                                     QTSConst.arrtitle.add(QTSConst.arr.get(i));
-                                                    pDialog.cancel();
+                                                    if (QTSConst.checklogin==false)
+                                                        pDialog.cancel();
                                                 }
                                                 Log.e("show arrList",QTSConst.arrListaction.size()+"a");
                                                 Log.e("show arrList",QTSConst.arrtitle.size()+"b");
@@ -1429,13 +1437,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                                         } else {
                                             Log.e("error", "No Success");
-                                            pDialog.cancel();
+                                            if (QTSConst.checklogin==false)
+                                                pDialog.cancel();
                                         }
                                     }
 
                                 } catch (JSONException e1) {
                                     e1.printStackTrace();
-                                    pDialog.cancel();
+                                    if (QTSConst.checklogin==false)
+                                        pDialog.cancel();
                                 }
                             }
                         }

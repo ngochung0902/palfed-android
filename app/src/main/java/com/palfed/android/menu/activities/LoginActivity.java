@@ -213,6 +213,7 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                QTSConst.checklogin = true;
                 if (edEmail.getText().toString().trim().length() > 0) {
                     if (QTSRun.isValidEmail(edEmail.getText().toString().trim())) {
                         if (edPassword.getText().toString().trim().length() > 0) {
@@ -324,10 +325,7 @@ public class LoginActivity extends Activity {
                         password = "";
                         localtime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                 .format(Calendar.getInstance().getTime()).toString();
-
                         getData();
-
-
 //                        new GetData().execute();
 //                        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(),
 //                                new GraphRequest.GraphJSONObjectCallback() {

@@ -220,6 +220,10 @@ public class WebBrowser extends Activity implements View.OnClickListener {
         }else if (v == ic_navmenu){
             hideMenuNav();
         }else if (v == ivClose){
+            if (QTSRun.getIsRegister(getApplicationContext()))
+            {
+                QTSConst.closewebview = true;
+            }
             Log.e("onlick","onclick");
             QTSRun.setIsService(getApplicationContext(), false);
             Intent intent = new Intent(WebBrowser.this, MainActivity.class);
@@ -404,7 +408,6 @@ public class WebBrowser extends Activity implements View.OnClickListener {
 //        super.onDestroy();
 //
 //    }
-
     //flipscreen not loading again
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -600,6 +603,7 @@ public class WebBrowser extends Activity implements View.OnClickListener {
                 if (arrList.get(position).getAction().toString().contains("app:")) {
                     if (arrList.get(position).getAction().toString().equalsIgnoreCase("app:close-webview")) {
                         if (ischeckivClose == true){
+                            QTSConst.closewebview = true;
                             QTSRun.setIsService(getApplicationContext(), false);
                             Intent intent = new Intent(WebBrowser.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
